@@ -79,19 +79,52 @@ const findUserByEmail = async (email) => {
     return data;
 };
 
-const findAllUsers= async ()=>{
-    const {data, error} = await supabase
-    .from("users")
-    .select("*")
-    .in("role", ["driver", "passenger"])
-        .order("created_at",{ascending:false});
+const findAllUsers = async () => {
+    const { data, error } = await supabaseAdmin
+        .from("users")
+        .select("*")
+        .order("created_at", { ascending: false });
 
     if (error) {
         throw error;
     }
 
     return data ?? [];
-}
+};
+
+/**
+ * Update a user's verification status (e.g., student/staff ID verification).
+ */
+const updateUserVerification = async (userId, isVerified) => {
+    const { data, error } = await supabaseAdmin
+        .from("users")
+        .update({
+            is_verified: isVerified,
+            updated_at: new Date().toISOString(),
+        })
+        .eq("id", userId)
+        .select()
+        .single();
+
+    if (error) {
+        // If column doesn't exist yet, we can fallback to updating user_profile or handling gracefully
+        const fallbackProfile = isVerified ? "verified" : "unverified";
+        const { data: fbData, error: fbError } = await supabaseAdmin
+            .from("users")
+            .update({
+                user_profile: fallbackProfile,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", userId)
+            .select()
+            .single();
+
+        if (fbError) throw fbError;
+        return fbData;
+    }
+
+    return data;
+};
 
 /**
  * Update a user's own profile.
@@ -128,30 +161,28 @@ const updateUserProfile = async (
     return data;
 };
 
-const findUserByRole= async (role)=>{
-
+const findUserByRole = async (role) => {
     console.log("Role received by model:", role);
-    console.log("Role type:", typeof role);
-    console.log("Role JSON:", JSON.stringify(role));
 
-    const {data, error} = await supabaseAdmin
-    .from("users")
-    .select("*")
+    const { data, error } = await supabaseAdmin
+        .from("users")
+        .select("*")
         .eq("role", role)
-        .order("created_at",{ascending:false});
+        .order("created_at", { ascending: false });
 
     if (error) {
         throw error;
     }
 
     return data;
-}
+};
 
 module.exports = {
     createUserProfile,
     findUserById,
     findUserByEmail,
     findAllUsers,
+    updateUserVerification,
     updateUserProfile,
     findUserByRole,
 };

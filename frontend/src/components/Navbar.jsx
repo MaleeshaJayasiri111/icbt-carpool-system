@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { User, Shield } from 'lucide-react';
 
 
 const Navbar = () => {
@@ -9,34 +9,26 @@ const Navbar = () => {
     const [user, setUser] = useState(null);
 
     const handleDashboardClick = () => {
-
-        const token =
-            localStorage.getItem("token");
-
-        const storedUser =
-            localStorage.getItem("user");
-
+        const token = localStorage.getItem("token");
+        const storedUser = localStorage.getItem("user");
 
         if (!token || !storedUser) {
             navigate("/login");
             return;
         }
 
-
-        const user =
-            JSON.parse(storedUser);
-
-
-        if (user.role === "driver") {
-
-            navigate("/driver/dashboard");
-
-        } else if (user.role === "passenger") {
-
-            navigate("/passenger/dashboard");
-
-        } else {
-
+        try {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser.role === "admin") {
+                navigate("/admin");
+            } else if (parsedUser.role === "driver") {
+                navigate("/driver/dashboard");
+            } else if (parsedUser.role === "passenger") {
+                navigate("/passenger/dashboard");
+            } else {
+                navigate("/login");
+            }
+        } catch (e) {
             navigate("/login");
         }
     };
@@ -57,6 +49,7 @@ const Navbar = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
         setUser(null);
         navigate('/login');
     };
@@ -84,7 +77,6 @@ const Navbar = () => {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarNav">
-                    {/* Requested Order: Home -> About Us -> Search Rides -> Dashboard -> Help & Manual -> Contact Us */}
                     <ul className="navbar-nav me-auto gap-1 gap-lg-2">
                         <li className="nav-item">
                             <Link className={`nav-link ${isActive('/')}`} to="/">Home</Link>
@@ -92,6 +84,14 @@ const Navbar = () => {
                         <li className="nav-item">
                             <Link className={`nav-link ${isActive('/about')}`} to="/about">About Us</Link>
                         </li>
+
+                        {user?.role === "admin" && (
+                            <li className="nav-item">
+                                <Link className={`nav-link text-warning fw-bold d-flex align-items-center gap-1 ${isActive('/admin')}`} to="/admin">
+                                    <Shield size={15} /> Admin Panel
+                                </Link>
+                            </li>
+                        )}
 
                         <li className="nav-item">
                             <button
@@ -114,8 +114,8 @@ const Navbar = () => {
                     <div className="d-flex align-items-center gap-2 mt-2 mt-lg-0">
                         {user ? (
                             <>
-                                <span className="badge badge-yb-user d-flex align-items-center gap-1 px-3 py-2 text-capitalize fs-6">
-                                    <User size={16} /> {user.name || user.role}
+                                <span className={`badge d-flex align-items-center gap-1 px-3 py-2 text-capitalize fs-6 ${user.role === 'admin' ? 'bg-warning text-dark' : 'badge-yb-user'}`}>
+                                    {user.role === 'admin' ? <Shield size={16} /> : <User size={16} />} {user.name || user.role}
                                 </span>
                                 <button
                                     onClick={handleLogout}
