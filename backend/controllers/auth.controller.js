@@ -88,10 +88,12 @@ const login = async (req,res)=>{
           message: "Login successful",
           data: result,
       });
-  }catch (e) {
-      return res.status(500).json({
+  }catch (error) {
+      console.error("Login error:", error);
+
+      return res.status(error.statusCode || 500).json({
           success: false,
-          message:  "Login failed",
+          message: error.message || "Login failed",
       });
   }
 }

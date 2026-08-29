@@ -1,26 +1,53 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
+import {loginUser} from "../services/authService";
 
 const Login = () => {
-    const [formData, setFormData] = useState({ email: '', password: '', role: 'passenger' });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        setError('');
+        setError("");
+
         try {
-            // Simulate login logic
-            if (!formData.email || !formData.password) {
-                throw new Error('Please enter both email and password.');
+            const response = await loginUser({
+                email: formData.email,
+                password: formData.password,
+            });
+
+            console.log("Login response:", response);
+
+            const user = response.data.user;
+            const session = response.data.session;
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(user)
+            );
+
+            localStorage.setItem(
+                "token",
+                session.access_token
+            );
+
+            if (user.role === "driver") {
+                navigate("/driver/dashboard");
+            } else if (user.role === "passenger") {
+
+                navigate("/passenger/dashboard");
+
             }
-            console.log('Login attempt:', formData);
-            // Save dummy user data in localStorage to simulate auth
-            localStorage.setItem('user', JSON.stringify({ role: formData.role, name: formData.email.split('@')[0] }));
-            navigate('/dashboard');
+
         } catch (err) {
-            setError(err.message || 'Login failed. Please try again.');
+            console.error("Login error:", err);
+
+            setError(
+                err.response?.data?.message ||
+                "Login failed. Please check your email and password."
+            );
         }
     };
 
@@ -38,19 +65,7 @@ const Login = () => {
                 {error && <div className="alert alert-danger py-2">{error}</div>}
 
                 <form onSubmit={handleLogin}>
-                    <div className="mb-3">
-                        <label className="form-label fw-semibold">Signing in as:</label>
-                        <div className="d-flex gap-3">
-                            <div className="form-check">
-                                <input className="form-check-input" type="radio" name="role" id="rolePassenger" defaultChecked onChange={() => setFormData({ ...formData, role: 'passenger' })} />
-                                <label className="form-check-label fw-medium" htmlFor="rolePassenger">Passenger</label>
-                            </div>
-                            <div className="form-check">
-                                <input className="form-check-input" type="radio" name="role" id="roleDriver" onChange={() => setFormData({ ...formData, role: 'driver' })} />
-                                <label className="form-check-label fw-medium" htmlFor="roleDriver">Driver</label>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <div className="mb-3">
                         <label className="form-label fw-semibold">Email address</label>

@@ -28,7 +28,29 @@ const createPayment = async ({
     return data;
 };
 
+const refundPaymentByBookingId = async (bookingId) => {
+    const {data,error}= await supabaseAdmin
+        .from("payments")
+        .update({
+            payment_status:"refunded",
+            refunded_at: new Date().toISOString(),
+        })
+        .eq("booking_id", bookingId)
+        .eq(
+            "payment_status",
+            "successful"
+        )
+        .select()
+        .single();
+
+    if(error) throw error;
+    return data;
+}
+
+
 
 module.exports = {
     createPayment,
+    refundPaymentByBookingId,
+
 };

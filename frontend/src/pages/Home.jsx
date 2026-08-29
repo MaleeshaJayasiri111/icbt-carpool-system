@@ -27,15 +27,7 @@ const Home = () => {
                         Connect with students and staff for shared transport to and from ICBT campus. Secure, efficient, and reliable carpooling designed specifically for our community's needs.
                     </p>
 
-                    <div className="d-flex gap-3 justify-content-center">
-                        <Link to="/search-rides" className="btn btn-primary btn-lg d-flex align-items-center gap-2 px-4 shadow">
-                            <Search size={20} />
-                            Find a Ride
-                        </Link>
-                        <Link to="/dashboard" className="btn btn-outline-light btn-lg px-4 shadow-sm">
-                            Offer a Ride
-                        </Link>
-                    </div>
+
                 </div>
             </div>
 

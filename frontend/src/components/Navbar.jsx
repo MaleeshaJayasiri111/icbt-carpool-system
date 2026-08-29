@@ -2,10 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 
+
 const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
+
+    const handleDashboardClick = () => {
+
+        const token =
+            localStorage.getItem("token");
+
+        const storedUser =
+            localStorage.getItem("user");
+
+
+        if (!token || !storedUser) {
+            navigate("/login");
+            return;
+        }
+
+
+        const user =
+            JSON.parse(storedUser);
+
+
+        if (user.role === "driver") {
+
+            navigate("/driver/dashboard");
+
+        } else if (user.role === "passenger") {
+
+            navigate("/passenger/dashboard");
+
+        } else {
+
+            navigate("/login");
+        }
+    };
 
     // Sync logged in user state on route change or storage updates
     useEffect(() => {
@@ -58,11 +92,15 @@ const Navbar = () => {
                         <li className="nav-item">
                             <Link className={`nav-link ${isActive('/about')}`} to="/about">About Us</Link>
                         </li>
+
                         <li className="nav-item">
-                            <Link className={`nav-link ${isActive('/search-rides')}`} to="/search-rides">Search Rides</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className={`nav-link ${isActive('/dashboard')}`} to="/dashboard">Dashboard</Link>
+                            <button
+                                type="button"
+                                onClick={handleDashboardClick}
+                                className="nav-link btn btn-link"
+                            >
+                                Dashboard
+                            </button>
                         </li>
                         <li className="nav-item">
                             <Link className={`nav-link ${isActive('/help')}`} to="/help">Help & Manual</Link>

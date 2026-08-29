@@ -1,26 +1,28 @@
 const {createClient}  = require("@supabase/supabase-js");
 
 const {
-    NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    SUPABASE_SERVICE_ROLE_KEY
 } = process.env;
+console.log(SUPABASE_URL);
+console.log(SUPABASE_ANON_KEY);
 
-if (!NEXT_PUBLIC_SUPABASE_URL) {
+if (!SUPABASE_URL) {
     throw new Error("SUPABASE_URL is missing");
 }
 
-if (!NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+if (!SUPABASE_ANON_KEY) {
     throw new Error("SUPABASE_ANON_KEY is missing");
 }
 
-if (!NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY) {
+if (!SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY is missing");
 }
 
 const supabase = createClient(
-    NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
         auth:{
             persistSession:false,
@@ -31,8 +33,8 @@ const supabase = createClient(
 );
 
 const supabaseAdmin = createClient(
-    NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY,
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
     {
         auth: {
             persistSession: false,

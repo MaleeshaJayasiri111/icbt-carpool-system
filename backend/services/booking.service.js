@@ -4,7 +4,7 @@ const {
     findBookingByRideAndPassenger,
     findBookingsByPassenger,
     updateBookingStatus,
-
+    findBookingRequestsByDriver,
 } = require("../models/booking.model");
 
 const {
@@ -13,6 +13,14 @@ const {
 } = require("../models/ride.model");
 
 const {createPayment} = require("../models/payment.model");
+
+
+const getDriverBookingRequests = async (driverId) => {
+
+    return await findBookingRequestsByDriver(
+        driverId
+    );
+};
 
 const requestBooking = async (
     passengerId,
@@ -92,10 +100,11 @@ const makeDummyPayment = async (
     }
 
     const ride= await findRideById(booking.ride_id);
+
     if (
         !ride ||
-        ride.status !== "available" ||
-        ride.available_seats <= 0
+        ride.status === "cancelled" ||
+        ride.status === "completed"
     ) {
         const error = new Error(
             "Ride is no longer available"
@@ -113,25 +122,6 @@ const makeDummyPayment = async (
             amount: ride.fee_per_seat,
             paymentStatus: "successful",
         });
-
-
-    const remainingSeats =
-        ride.available_seats - 1;
-
-
-    let rideStatus = "available";
-
-    if (remainingSeats === 0) {
-        rideStatus = "full";
-    }
-
-
-    await updateRideSeats(
-        ride.id,
-        remainingSeats,
-        rideStatus
-    );
-
 
     const confirmedBooking =
         await updateBookingStatus(
@@ -198,7 +188,8 @@ const cancelMyBooking= async (
     }
     // If payment was already completed,
     // passenger had occupied one seat.
-    if (booking.status === "confirmed") {
+    if (booking.status === "confirmed" ||
+        booking.status === "payment_pending") {
 
         const newAvailableSeats =
             ride.available_seats + 1;
@@ -231,15 +222,23 @@ const getMyRideHistory = async (passengerId,)=>{
 
     bookings.forEach((booking) => {
 
-        if (booking.status === "cancelled") {
+        if (
+            booking.status === "cancelled" ||
+            booking.rides?.status === "cancelled"
+        ) {
+
             cancelled.push(booking);
+
             return;
         }
 
         if (
+            booking.status === "confirmed" &&
             booking.rides?.status === "completed"
         ) {
+
             completed.push(booking);
+
             return;
         }
 
@@ -264,10 +263,145 @@ const getMyRideHistory = async (passengerId,)=>{
     };
 }
 
+const acceptBookingRequest = async (
+    driverId,
+    bookingId
+) => {
+
+    const booking =
+        await findBookingById(bookingId);
+
+    if (!booking) {
+        const error = new Error(
+            "Booking request not found"
+        );
+        error.statusCode = 404;
+        throw error;
+    }
+
+    if (booking.status !== "requested") {
+        const error = new Error(
+            "This booking cannot be accepted"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const ride =
+        await findRideById(
+            booking.ride_id
+        );
+
+    if (!ride) {
+        const error =
+            new Error("Ride not found");
+
+        error.statusCode = 404;
+        throw error;
+    }
+
+    if (ride.driver_id !== driverId) {
+        const error = new Error(
+            "You cannot manage this ride request"
+        );
+
+        error.statusCode = 403;
+        throw error;
+    }
+
+    if (ride.available_seats <= 0) {
+        const error =
+            new Error("No seats available");
+
+        error.statusCode = 400;
+        throw error;
+    }
+
+
+    const remainingSeats =
+        ride.available_seats - 1;
+
+    const rideStatus =
+        remainingSeats === 0
+            ? "full"
+            : "available";
+
+
+    await updateRideSeats(
+        ride.id,
+        remainingSeats,
+        rideStatus
+    );
+
+
+    return await updateBookingStatus(
+        bookingId,
+        "payment_pending"
+    );
+};
+
+const rejectBookingRequest = async (
+    driverId,
+    bookingId
+) => {
+
+    const booking =
+        await findBookingById(bookingId);
+
+    if (!booking) {
+        const error =
+            new Error(
+                "Booking request not found"
+            );
+
+        error.statusCode = 404;
+        throw error;
+    }
+
+
+    const ride =
+        await findRideById(
+            booking.ride_id
+        );
+
+
+    if (
+        !ride ||
+        ride.driver_id !== driverId
+    ) {
+        const error = new Error(
+            "You cannot manage this ride request"
+        );
+
+        error.statusCode = 403;
+        throw error;
+    }
+
+
+    if (booking.status !== "requested") {
+        const error = new Error(
+            "This booking cannot be rejected"
+        );
+
+        error.statusCode = 400;
+        throw error;
+    }
+
+
+    return await updateBookingStatus(
+        bookingId,
+        "rejected"
+    );
+};
+
 module.exports = {
     requestBooking,
     makeDummyPayment,
     getMyBookings,
     cancelMyBooking,
-    getMyRideHistory
+    getMyRideHistory,
+
+    getDriverBookingRequests,
+    acceptBookingRequest,
+    rejectBookingRequest,
 }
