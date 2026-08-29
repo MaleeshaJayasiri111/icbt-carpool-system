@@ -1,49 +1,87 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, Car, Phone, CreditCard, ShieldCheck } from 'lucide-react';
+import {registerUser} from "../services/authService";
 
 const Register = () => {
     const navigate = useNavigate();
     const [role, setRole] = useState('passenger');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         mobile: '',
-        nic: '',
         password: '',
-        vehicleNumber: '',
-        vehicleType: '',
-        availableSeats: '',
+        profileImage: null,
         agreeTerms: false
     });
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
+
         setError('');
+        setLoading(true);
+
         try {
-            if (!formData.name || !formData.email || !formData.password || !formData.mobile || !formData.nic) {
-                throw new Error('Please fill in all required personal information fields (*).');
+            if (
+                !formData.name ||
+                !formData.email ||
+                !formData.password ||
+                !formData.mobile
+            ) {
+                throw new Error(
+                    'Please fill in all required fields.'
+                );
+            }
+
+            if (!formData.profileImage) {
+                throw new Error(
+                    'Please select a profile image.'
+                );
             }
 
             if (!formData.agreeTerms) {
-                throw new Error('You must agree to the Privacy Policy and Terms and Conditions to proceed.');
+                throw new Error(
+                    'You must agree to the Privacy Policy and Terms and Conditions.'
+                );
             }
 
-            if (role === 'driver') {
-                if (!formData.vehicleNumber || !formData.vehicleType || !formData.availableSeats) {
-                    throw new Error('Please fill in all vehicle-related required fields (*) for driver registration.');
-                }
-            }
+            const data = new FormData();
 
-            console.log('Registration details:', { role, ...formData });
+            data.append('fullName', formData.name);
+            data.append('email', formData.email);
+            data.append('password', formData.password);
+            data.append('phone', formData.mobile);
+            data.append('role', role);
+            data.append(
+                'profileImage',
+                formData.profileImage
+            );
 
-            // Save dummy user data in localStorage to simulate auth session
-            localStorage.setItem('user', JSON.stringify({ role: role, name: formData.name, mobile: formData.mobile, nic: formData.nic }));
-            navigate('/dashboard');
+            const response = await registerUser(data);
+
+            console.log(
+                'Registration successful:',
+                response
+            );
+
+            navigate('/login');
 
         } catch (err) {
-            setError(err.message || 'An error occurred during registration.');
+            console.error(
+                'Registration error:',
+                err
+            );
+
+            setError(
+                err.response?.data?.message ||
+                err.message ||
+                'Registration failed.'
+            );
+
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -123,21 +161,7 @@ const Register = () => {
                                 />
                             </div>
                         </div>
-                        <div className="col-md-6">
-                            <label className="form-label fw-semibold">NIC Number <span className="text-danger">*</span></label>
-                            <div className="input-group">
-                                <span className="input-group-text bg-light text-muted small">
-                                    <CreditCard size={16} />
-                                </span>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Enter your NIC number"
-                                    required
-                                    onChange={(e) => setFormData({ ...formData, nic: e.target.value })}
-                                />
-                            </div>
-                        </div>
+
                     </div>
 
                     <div className="mb-4">
@@ -151,48 +175,26 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* Conditional Vehicle Info Section for Drivers */}
-                    {role === 'driver' && (
-                        <div className="bg-light p-3 p-md-4 rounded-3 mb-4 border border-warning border-opacity-50">
-                            <h6 className="fw-bold mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
-                                <Car size={20} className="text-warning" /> Driver & Vehicle Information
-                            </h6>
-                            <div className="row g-3">
-                                <div className="col-md-6">
-                                    <label className="form-label fw-semibold small">Vehicle Number <span className="text-danger">*</span></label>
-                                    <input
-                                        type="text"
-                                        className="form-control form-control-sm"
-                                        placeholder="e.g. CAA-1234"
-                                        required={role === 'driver'}
-                                        onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value })}
-                                    />
-                                </div>
-                                <div className="col-md-6">
-                                    <label className="form-label fw-semibold small">Vehicle Name / Type <span className="text-danger">*</span></label>
-                                    <input
-                                        type="text"
-                                        className="form-control form-control-sm"
-                                        placeholder="e.g. Honda Fit or Car"
-                                        required={role === 'driver'}
-                                        onChange={(e) => setFormData({ ...formData, vehicleType: e.target.value })}
-                                    />
-                                </div>
-                                <div className="col-md-12">
-                                    <label className="form-label fw-semibold small">Available Seats <span className="text-danger">*</span></label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        max="10"
-                                        className="form-control form-control-sm"
-                                        placeholder="e.g. 3"
-                                        required={role === 'driver'}
-                                        onChange={(e) => setFormData({ ...formData, availableSeats: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <div className="mb-4">
+                        <label className="form-label fw-semibold">
+                            Profile Image
+                            <span className="text-danger"> *</span>
+                        </label>
+
+                        <input
+                            type="file"
+                            className="form-control"
+                            accept="image/*"
+                            required
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    profileImage: e.target.files[0],
+                                })
+                            }
+                        />
+                    </div>
+
 
                     {/* Terms and Conditions Checkbox */}
                     <div className="form-check mb-4">
@@ -209,8 +211,19 @@ const Register = () => {
                         </label>
                     </div>
 
-                    <button type="submit" className="btn btn-yb-yellow w-100 py-2 fw-bold mb-3 btn-lg fs-6">
-                        Register as {role === 'driver' ? 'Driver' : 'Passenger'}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="btn btn-yb-yellow w-100 py-2 fw-bold mb-3 btn-lg fs-6"
+                    >
+                        {loading
+                            ? 'Registering...'
+                            : `Register as ${
+                                role === 'driver'
+                                    ? 'Driver'
+                                    : 'Passenger'
+                            }`
+                        }
                     </button>
                 </form>
 

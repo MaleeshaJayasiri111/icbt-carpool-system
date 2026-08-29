@@ -5,16 +5,23 @@ const {
     makePayment,
     getMyBookings,
     cancelBooking,
-    getMyRideHistory
+    getMyRideHistory,
+
+    getDriverBookingRequests,
+    acceptBookingRequest,
+    rejectBookingRequest,
+
 } = require(
     "../controllers/booking.controller"
 );
+
 
 const {
     authenticate,
 } = require(
     "../middleware/auth.middleware"
 );
+
 
 const {
     requirePassenger,
@@ -23,16 +30,24 @@ const {
 );
 
 
+const {
+    requireDriver,
+} = require(
+    "../middleware/driver.middleware"
+);
+
+
 const router = express.Router();
 
 
+// All routes require login
 router.use(authenticate);
-router.use(requirePassenger);
 
 
-// Passenger selects a ride
+// Passenger requests to join ride
 router.post(
     "/ride/:rideId",
+    requirePassenger,
     requestBooking
 );
 
@@ -40,21 +55,61 @@ router.post(
 // Dummy payment
 router.post(
     "/:bookingId/pay",
+    requirePassenger,
     makePayment
 );
 
-router.get("/history", getMyRideHistory);
+
+// Passenger ride history
+router.get(
+    "/history",
+    requirePassenger,
+    getMyRideHistory
+);
 
 
-// Passenger's to find their rides
+// Passenger bookings
 router.get(
     "/my-rides",
+    requirePassenger,
     getMyBookings
 );
 
+
+// Passenger cancels booking
 router.patch(
     "/:bookingId/cancel",
+    requirePassenger,
     cancelBooking
+);
+
+
+// ==============================
+// DRIVER ROUTES
+// ==============================
+
+
+// Driver sees join requests
+router.get(
+    "/driver/requests",
+    requireDriver,
+    getDriverBookingRequests
+);
+
+
+// Driver accepts request
+router.patch(
+    "/:bookingId/accept",
+    requireDriver,
+    acceptBookingRequest
+);
+
+
+// Driver rejects request
+router.patch(
+    "/:bookingId/reject",
+    requireDriver,
+    rejectBookingRequest
 );
 
 

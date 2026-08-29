@@ -126,10 +126,120 @@ const getMyRideHistory= async (req,res)=>{
     }
 }
 
+const getDriverBookingRequests = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const requests =
+            await bookingService
+                .getDriverBookingRequests(
+                    req.user.id
+                );
+
+        return res.status(200).json({
+            success: true,
+            count: requests.length,
+            data: requests,
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Get booking requests error:",
+            error
+        );
+
+        return res
+            .status(
+                error.statusCode || 500
+            )
+            .json({
+                success: false,
+                message: error.message,
+            });
+    }
+};
+
+const acceptBookingRequest = async (req, res) => {
+    try {
+
+        const { bookingId } = req.params;
+
+        const booking =
+            await bookingService.acceptBookingRequest(
+                req.user.id,
+                bookingId
+            );
+
+        return res.status(200).json({
+            success: true,
+            message:
+                "Passenger request accepted. Waiting for payment.",
+            data: booking,
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Accept booking request error:",
+            error
+        );
+
+        return res.status(
+            error.statusCode || 500
+        ).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+const rejectBookingRequest = async (req, res) => {
+    try {
+
+        const { bookingId } = req.params;
+
+        const booking =
+            await bookingService.rejectBookingRequest(
+                req.user.id,
+                bookingId
+            );
+
+        return res.status(200).json({
+            success: true,
+            message:
+                "Passenger request rejected.",
+            data: booking,
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Reject booking request error:",
+            error
+        );
+
+        return res.status(
+            error.statusCode || 500
+        ).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 module.exports = {
     requestBooking,
     makePayment,
     getMyBookings,
     cancelBooking,
     getMyRideHistory,
+
+    acceptBookingRequest,
+    rejectBookingRequest,
+    getDriverBookingRequests,
 };

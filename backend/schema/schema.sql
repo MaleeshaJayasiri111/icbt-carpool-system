@@ -193,3 +193,35 @@ create table public.ride_messages (
 
                                       created_at timestamptz not null default now()
 );
+
+alter table public.ride_bookings
+drop constraint if exists ride_bookings_status_check;
+
+alter table public.ride_bookings
+    add constraint ride_bookings_status_check
+        check (
+            status in (
+                       'requested',
+                       'payment_pending',
+                       'confirmed',
+                       'rejected',
+                       'cancelled'
+                )
+            );
+alter table public.ride_bookings
+    alter column status set default 'requested';
+
+alter table public.payments
+drop constraint if exists payments_payment_status_check;
+
+alter table public.payments
+    add constraint payments_payment_status_check
+        check (
+            payment_status in (
+                               'successful',
+                               'refunded'
+                )
+            );
+
+alter table public.payments
+    add column if not exists refunded_at timestamptz;

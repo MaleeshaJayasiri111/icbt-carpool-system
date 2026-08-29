@@ -12,7 +12,7 @@ const createBooking = async ({
         .insert({
             ride_id: rideId,
             passenger_id: passengerId,
-            status: "payment_pending",
+            status: "requested",
         })
         .select()
         .single();
@@ -87,26 +87,42 @@ const findBookingsByPassenger = async (
     passengerId
 ) => {
 
-    const { data, error } = await supabaseAdmin
-        .from("ride_bookings")
-        .select(`
-            *,
-            rides (
+    const { data, error } =
+        await supabaseAdmin
+            .from("ride_bookings")
+            .select(`
                 *,
-                vehicles (
+
+                payments (
                     id,
-                    vehicle_number,
-                    vehicle_type,
-                    brand,
-                    model,
-                    color
+                    amount,
+                    payment_status,
+                    refunded_at,
+                    paid_at
+                ),
+
+                rides (
+                    *,
+                    vehicles (
+                        id,
+                        vehicle_number,
+                        vehicle_type,
+                        brand,
+                        model,
+                        color
+                    )
                 )
+            `)
+            .eq(
+                "passenger_id",
+                passengerId
             )
-        `)
-        .eq("passenger_id", passengerId)
-        .order("created_at", {
-            ascending: false,
-        });
+            .order(
+                "created_at",
+                {
+                    ascending: false,
+                }
+            );
 
     if (error) {
         throw error;
@@ -128,7 +144,7 @@ const findConfirmedPassengerByRide= async (
                 id,
                 full_name,
                 email,
-                contact_number,
+                phone,
                 user_profile
             )
         `)
@@ -140,6 +156,102 @@ const findConfirmedPassengerByRide= async (
     return data || [];
 }
 
+const findBookingRequestsByDriver = async (driverId) => {
+
+    const { data, error } = await supabaseAdmin
+        .from("ride_bookings")
+        .select(`
+            id,
+            ride_id,
+            passenger_id,
+            status,
+            created_at,
+
+            users (
+                id,
+                full_name,
+                email,
+                phone,
+                user_profile
+            ),
+
+            rides!inner (
+                id,
+                driver_id,
+                start_location,
+                destination,
+                ride_date,
+                departure_time,
+                fee_per_seat
+            )
+        `)
+        .eq("rides.driver_id", driverId)
+        .in("status", [
+            "requested",
+            "payment_pending"
+        ])
+        .order("created_at", {
+            ascending: false
+        });
+
+    if (error) {
+        throw error;
+    }
+
+    return data || [];
+};
+const findActiveBookingsByRide = async (rideId)=>{
+    const {data, error}= await supabaseAdmin
+        .from("ride_bookings")
+        .select("*")
+        .eq("ride_id", rideId)
+        .in(
+            "status",
+            [
+                "requested",
+                "payment_pending",
+                "confirmed",
+            ]
+        );
+
+    if (error) {
+        throw error;
+    }
+
+
+    return data || [];
+}
+
+const cancelBookingByRide = async (rideId)=>{
+    const { data, error } =
+        await supabaseAdmin
+            .from("ride_bookings")
+            .update({
+                status: "cancelled",
+            })
+            .eq(
+                "ride_id",
+                rideId
+            )
+            .in(
+                "status",
+                [
+                    "requested",
+                    "payment_pending",
+                    "confirmed",
+                ]
+            )
+            .select();
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    return data || [];
+}
+
 module.exports = {
     createBooking,
     findBookingById,
@@ -147,4 +259,8 @@ module.exports = {
     updateBookingStatus,
     findBookingsByPassenger,
     findConfirmedPassengerByRide,
+    findBookingRequestsByDriver,
+
+    findActiveBookingsByRide,
+    cancelBookingByRide,
 };
