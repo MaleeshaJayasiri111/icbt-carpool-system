@@ -1,10 +1,9 @@
-name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
 
 jobs:
   build-and-test:
@@ -12,24 +11,32 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
-      - name: Install Backend Dependencies & Run Tests
-        run: |
-          cd backend
-          npm install
-          npm test --if-present
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm install
 
-      - name: Install Frontend Dependencies & Run Tests
-        run: |
-          cd frontend
-          npm install
-          npm test --if-present
+      - name: Run Backend Tests
+        working-directory: backend
+        run: npm test --if-present
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Run Frontend Automated Tests
+        working-directory: frontend
+        run: npm test -- --watchAll=false
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: npm run build
 
       - name: Build Docker Containers
         run: docker compose build
