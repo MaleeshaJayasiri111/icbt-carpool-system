@@ -86,13 +86,13 @@ const updateVehicleById = async (vehicleId,updateData) => {
     }
     return data;
 }
-const deActivateVehicleById = async (vehicleId) => {
+const deactivateVehicleById = async (vehicleId) => {
     const {data, error} = await supabaseAdmin
     .from("vehicles")
     .update({
         is_active:false,
         }
-    ).eq("vehicle_id", vehicleId)
+    ).eq("id", vehicleId)
         .select()
     .single();
 
@@ -109,5 +109,5 @@ module.exports = {
     findVehicleByNumber,
     findVehiclesByDriver,
     updateVehicleById,
-    deActivateVehicleById,
+    deactivateVehicleById,
 }

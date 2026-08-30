@@ -7,6 +7,12 @@ const {
     findAvailableRides,
 } = require("../models/ride.model");
 
+const {refundPaymentByBookingId} = require("../models/payment.model");
+const {
+    findActiveBookingsByRide,
+    cancelBookingByRide,
+} = require("../models/booking.model");
+
 const {findConfirmedPassengerByRide} = require("../models/booking.model");
 
 const {
@@ -423,39 +429,128 @@ const updateMyRide = async (
 
 
 // CANCEL RIDE
+// CANCEL RIDE
 const cancelMyRide = async (
     driverId,
     rideId
 ) => {
 
-    const ride = await findRideById(rideId);
+    const ride =
+        await findRideById(rideId);
 
     if (!ride) {
-        const error = new Error("Ride not found");
+        const error =
+            new Error("Ride not found");
+
         error.statusCode = 404;
         throw error;
     }
 
+
+    // Driver can cancel only own ride
     if (ride.driver_id !== driverId) {
-        const error = new Error(
-            "You cannot cancel another driver's ride"
-        );
+
+        const error =
+            new Error(
+                "You cannot cancel another driver's ride"
+            );
+
         error.statusCode = 403;
         throw error;
     }
 
+
+    // Completed ride cannot be cancelled
     if (ride.status === "completed") {
-        const error = new Error(
-            "Completed ride cannot be cancelled"
-        );
+
+        const error =
+            new Error(
+                "Completed ride cannot be cancelled"
+            );
+
         error.statusCode = 400;
         throw error;
     }
 
-    return await updateRideStatus(
-        rideId,
-        "cancelled"
-    );
+
+    // Already cancelled
+    if (ride.status === "cancelled") {
+
+        const error =
+            new Error(
+                "Ride is already cancelled"
+            );
+
+        error.statusCode = 400;
+        throw error;
+    }
+
+
+    // ===============================
+    // FIND ACTIVE BOOKINGS
+    // ===============================
+
+    const bookings =
+        await findActiveBookingsByRide(
+            rideId
+        );
+
+
+    let refundedCount = 0;
+
+
+    // ===============================
+    // REFUND PAID PASSENGERS
+    // ===============================
+
+    for (const booking of bookings) {
+
+        // confirmed = passenger already paid
+        if (booking.status === "confirmed") {
+
+            const refund =
+                await refundPaymentByBookingId(
+                    booking.id
+                );
+
+
+            if (refund) {
+                refundedCount++;
+            }
+        }
+    }
+
+
+    // ===============================
+    // CANCEL ACTIVE BOOKINGS
+    // ===============================
+
+    const cancelledBookings =
+        await cancelBookingByRide(
+            rideId
+        );
+
+
+    // ===============================
+    // CANCEL RIDE
+    // ===============================
+
+    const cancelledRide =
+        await updateRideStatus(
+            rideId,
+            "cancelled"
+        );
+
+
+    return {
+        ride: cancelledRide,
+
+        cancelledBookings:
+        cancelledBookings.length,
+
+        refundedPayments:
+        refundedCount,
+    };
 };
 
 
