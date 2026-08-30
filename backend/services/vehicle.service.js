@@ -128,6 +128,7 @@ const updateMyVehicle = async (
     driverId,
     vehicleId,
     {
+        vehicleNumber,
         vehicleType,
         brand,
         model,
@@ -135,6 +136,7 @@ const updateMyVehicle = async (
         seatCapacity,
     }
 ) => {
+
     const vehicle =
         await getMyVehicleById(
             driverId,
@@ -143,14 +145,50 @@ const updateMyVehicle = async (
 
     const updateData = {};
 
+
+    // VEHICLE NUMBER
+    if (vehicleNumber !== undefined) {
+
+        const normalizedVehicleNumber =
+            vehicleNumber.trim().toUpperCase();
+
+        if (
+            normalizedVehicleNumber !==
+            vehicle.vehicle_number
+        ) {
+
+            const existingVehicle =
+                await findVehicleByNumber(
+                    normalizedVehicleNumber
+                );
+
+            if (existingVehicle) {
+                const error = new Error(
+                    "Vehicle number already registered"
+                );
+
+                error.statusCode = 409;
+                throw error;
+            }
+        }
+
+        updateData.vehicle_number =
+            normalizedVehicleNumber;
+    }
+
+
+    // VEHICLE TYPE
     if (vehicleType !== undefined) {
+
         const allowedTypes = [
             "car",
             "van",
             "three_wheeler",
         ];
 
-        if (!allowedTypes.includes(vehicleType)) {
+        if (
+            !allowedTypes.includes(vehicleType)
+        ) {
             const error = new Error(
                 "Invalid vehicle type"
             );
@@ -159,23 +197,37 @@ const updateMyVehicle = async (
             throw error;
         }
 
-        updateData.vehicle_type = vehicleType;
+        updateData.vehicle_type =
+            vehicleType;
     }
 
+
+    // BRAND
     if (brand !== undefined) {
-        updateData.brand = brand.trim();
+        updateData.brand =
+            brand.trim();
     }
 
+
+    // MODEL
     if (model !== undefined) {
-        updateData.model = model.trim();
+        updateData.model =
+            model.trim();
     }
 
+
+    // COLOR
     if (color !== undefined) {
-        updateData.color = color.trim();
+        updateData.color =
+            color.trim();
     }
 
+
+    // SEAT CAPACITY
     if (seatCapacity !== undefined) {
-        const capacity = Number(seatCapacity);
+
+        const capacity =
+            Number(seatCapacity);
 
         if (
             !Number.isInteger(capacity) ||
@@ -189,15 +241,16 @@ const updateMyVehicle = async (
             throw error;
         }
 
-        updateData.seat_capacity = capacity;
+        updateData.seat_capacity =
+            capacity;
     }
+
 
     return await updateVehicleById(
         vehicle.id,
         updateData
     );
 };
-
 
 const deactivateMyVehicle = async (
     driverId,

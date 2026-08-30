@@ -95,137 +95,55 @@ const Dashboard = () => {
 
     const DriverDashboard = () => (
         <div className="row g-4">
-            <div className="col-md-5">
-                <div className="card shadow-sm border-0 h-100 mb-4">
-                    <div className="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                        <h5 className="mb-0 fw-bold d-flex align-items-center gap-2"><Car size={20} className="text-primary" /> Post a Ride</h5>
-                        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => setShowVehicleInput(!showVehicleInput)}>+ Add Vehicle</button>
-                    </div>
+
+            <div className="col-md-6 col-lg-4">
+                <div className="card shadow-sm h-100">
                     <div className="card-body">
-                        {showVehicleInput && (
-                            <div className="mb-4 p-3 bg-light rounded border border-primary border-opacity-25">
-                                <h6 className="fw-medium small mb-2">Add New Vehicle</h6>
-                                <div className="d-flex gap-2">
-                                    <input type="text" className="form-control form-control-sm" placeholder="e.g. Honda Civic (CAA-9876)" value={newVehicle} onChange={e => setNewVehicle(e.target.value)} />
-                                    <button type="button" className="btn btn-sm btn-primary" onClick={handleAddVehicle}>Add</button>
-                                </div>
-                            </div>
-                        )}
-                        <form onSubmit={handlePostRide}>
-                            {/* Map Location Picker */}
-                            <div className="mb-3">
-                                <label className="form-label fw-medium small d-flex align-items-center gap-1">
-                                    <MapPin size={14} className="text-primary" /> Pick Locations on Map
-                                </label>
-                                <MapPicker
-                                    height="260px"
-                                    onPickupChange={(lat, lng) => setPostForm(f => ({ ...f, pickup: lat && lng ? { lat, lng } : null }))}
-                                    onDropoffChange={(lat, lng) => setPostForm(f => ({ ...f, dropoff: lat && lng ? { lat, lng } : null }))}
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label fw-medium small">Select Vehicle</label>
-                                <select className="form-select" required value={postForm.vehicle} onChange={e => setPostForm({ ...postForm, vehicle: e.target.value })}>
-                                    <option value="">Select a Vehicle...</option>
-                                    {vehicles.map(v => (
-                                        <option key={v.id} value={v.name}>{v.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label fw-medium small">Route / Destination</label>
-                                <select className="form-select" required value={postForm.route} onChange={e => setPostForm({ ...postForm, route: e.target.value })}>
-                                    <option value="">Select Route</option>
-                                    <option value="Kegalle">Kegalle</option>
-                                    <option value="Colombo">Colombo</option>
-                                    <option value="Kandy">Kandy</option>
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label fw-medium small">Departure Time</label>
-                                <input type="time" className="form-control" required value={postForm.time} onChange={e => setPostForm({ ...postForm, time: e.target.value })} />
-                            </div>
-                            <div className="mb-4">
-                                <label className="form-label fw-medium small">Available Seats</label>
-                                <input type="number" min="1" max="10" className="form-control" required value={postForm.seats} onChange={e => setPostForm({ ...postForm, seats: e.target.value })} />
-                            </div>
-                            <button type="submit" className="btn btn-primary w-100">Post Ride Offer</button>
-                        </form>
-                    </div>
-                </div>
+                        <h5>Vehicles</h5>
+                        <p>Register and manage your vehicles.</p>
 
-                {postedRides.length > 0 && (
-                    <div className="card shadow-sm border-0">
-                        <div className="card-header bg-white border-bottom py-3">
-                            <h5 className="mb-0 fw-bold d-flex align-items-center gap-2"><Car size={20} className="text-primary" /> My Posted Rides</h5>
-                        </div>
-                        <ul className="list-group list-group-flush">
-                            {postedRides.map(ride => (
-                                <li key={ride.id} className="list-group-item py-3">
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 className="mb-1 text-dark">{ride.route}</h6>
-                                            <div className="small text-muted d-flex align-items-center gap-2 mt-1">
-                                                <span className="d-flex align-items-center gap-1"><Clock size={12} /> {ride.time}</span>
-                                                {ride.vehicle && (
-                                                    <span className="d-flex align-items-center gap-1 border-start border-2 ps-2"><Car size={12} /> {ride.vehicle}</span>
-                                                )}
-                                            </div>
-                                            {ride.pickup && (
-                                                <div className="small text-muted mt-1 d-flex align-items-center gap-1">
-                                                    <MapPin size={11} className="text-success" />
-                                                    <span>{ride.pickup.lat.toFixed(4)}, {ride.pickup.lng.toFixed(4)}</span>
-                                                    {ride.dropoff && <><span>→</span><span>{ride.dropoff.lat.toFixed(4)}, {ride.dropoff.lng.toFixed(4)}</span></>}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <span className="badge bg-secondary">{ride.seats} Seats</span>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
-
-            {/* Ride Requests Section */}
-            <div className="col-md-7">
-                <div className="card shadow-sm border-0 h-100">
-                    <div className="card-header bg-white border-bottom py-3">
-                        <h5 className="mb-0 fw-bold d-flex align-items-center gap-2"><Settings size={20} className="text-primary" /> Booking Requests</h5>
-                    </div>
-                    <div className="card-body p-0">
-                        {incomingRequests.length === 0 ? (
-                            <div className="p-4 text-center text-muted">No requests at the moment.</div>
-                        ) : (
-                            <ul className="list-group list-group-flush">
-                                {incomingRequests.map(req => (
-                                    <li key={req.id} className="list-group-item p-3">
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 className="mb-1 fw-semibold">{req.passengerName}</h6>
-                                                <span className="text-muted small d-flex align-items-center gap-1"><MapPin size={12} /> Route: {req.route}</span>
-                                            </div>
-                                            <div>
-                                                {req.status === 'pending' ? (
-                                                    <div className="d-flex gap-2">
-                                                        <button className="btn btn-sm btn-success d-flex align-items-center gap-1" onClick={() => updateRequestStatus(req.id, 'accepted')}><Check size={16} /> Accept</button>
-                                                        <button className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1" onClick={() => updateRequestStatus(req.id, 'rejected')}><X size={16} /> Reject</button>
-                                                    </div>
-                                                ) : (
-                                                    <span className={`badge ${req.status === 'accepted' ? 'bg-success' : 'bg-danger'} px-2 py-1`}>
-                                                        {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => navigate("/driver/vehicles")}
+                        >
+                            Manage Vehicles
+                        </button>
                     </div>
                 </div>
             </div>
+
+            <div className="col-md-6 col-lg-4">
+                <div className="card shadow-sm h-100">
+                    <div className="card-body">
+                        <h5>Post Ride</h5>
+                        <p>Create a new ride for passengers.</p>
+
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => navigate("/driver/post-ride")}
+                        >
+                            Post Ride
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="col-md-6 col-lg-4">
+                <div className="card shadow-sm h-100">
+                    <div className="card-body">
+                        <h5>Ride Requests</h5>
+                        <p>Review passenger requests.</p>
+
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => navigate("/driver/ride-requests")}
+                        >
+                            View Requests
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     );
 
@@ -326,7 +244,7 @@ const Dashboard = () => {
                         {user.role === 'driver' ? <Car size={16} className="me-1" /> : <Clock size={16} className="me-1" />}
                         {user.role === 'driver' ? 'Driver Dashboard' : 'Passenger Dashboard'}
                     </span>
-                    <h1 className="display-5 fw-bold mb-2 text-white">Welcome, {user.name}</h1>
+                    <h1 className="display-5 fw-bold mb-2 text-white">Welcome, {user.full_name}</h1>
                     <p className="lead text-light text-opacity-90 mb-0" style={{ maxWidth: '600px', lineHeight: '1.6' }}>
                         {user.role === 'driver'
                             ? 'Post your rides, manage booking requests, and connect with passengers heading your way.'
