@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, Car, Phone,ShieldCheck } from 'lucide-react';
+import { UserPlus, Car, Phone, CreditCard, ShieldCheck } from 'lucide-react';
 import {registerUser} from "../services/authService";
 
 const Register = () => {

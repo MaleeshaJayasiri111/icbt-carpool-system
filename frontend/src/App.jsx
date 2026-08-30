@@ -20,12 +20,16 @@ import MyRides from "./pages/driverComponents/MyRides";
 import RidePassengers from "./pages/driverComponents/RidePassengers";
 import JoinRequests from "./pages/driverComponents/JoinRequests";
 import About from "./pages/About";
+import Help from "./pages/Help";
 import Contact from "./pages/Contact";
 import PassengerDashboard from "./pages/passengerComponenets/PassengerDashboard";
 import FindRides from "./pages/passengerComponenets/FindRides";
 import PassengerMyRides from "./pages/passengerComponenets/PassengerMyRides";
 import RideHistory from "./pages/passengerComponenets/RideHistory";
 import RideChat from "./pages/shared/RideChat";
+
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 function App() {
   return (
@@ -50,6 +54,11 @@ function App() {
             />
 
             <Route
+                path="/help"
+                element={<Help />}
+            />
+
+            <Route
                 path="/login"
                 element={<Login />}
             />
@@ -58,6 +67,14 @@ function App() {
                 path="/register"
                 element={<Register />}
             />
+
+            {/* ADMIN PROTECTED AREA */}
+            <Route element={<AdminProtectedRoute />}>
+              <Route
+                  path="/admin"
+                  element={<AdminDashboard />}
+              />
+            </Route>
 
           </Route>
 

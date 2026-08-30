@@ -76,7 +76,7 @@ const RidePassengers = () => {
 
     useEffect(() => {
         loadPassengers();
-    }, []);
+    }, [rideId]);
 
 
     return (
