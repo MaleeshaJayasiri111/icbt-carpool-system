@@ -16,7 +16,6 @@ import {
     Loader2,
     Route,
     Pencil,
-    Eye,
     X,
 } from "lucide-react";
 
@@ -25,9 +24,8 @@ import {
     cancelRide,
     completeRide,
     updateRide,
-    getRidePassengers,
 } from "../../services/rideService";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const MyRides = () => {
 
@@ -62,19 +60,6 @@ const MyRides = () => {
 
     const [filter, setFilter] =
         useState("all");
-
-    const [showPassengers, setShowPassengers] =
-        useState(false);
-
-    const [passengers, setPassengers] =
-        useState([]);
-
-    const [passengersLoading, setPassengersLoading] =
-        useState(false);
-
-    const [selectedRide, setSelectedRide] =
-        useState(null);
-
 
     // ==========================
     // LOAD RIDES
@@ -262,10 +247,10 @@ const MyRides = () => {
             const payload = {
 
                 rideDate:
-                editForm.rideDate,
+                    editForm.rideDate,
 
                 departureTime:
-                editForm.departureTime,
+                    editForm.departureTime,
 
                 totalSeats:
                     Number(
@@ -309,60 +294,6 @@ const MyRides = () => {
         } finally {
 
             setEditSaving(false);
-        }
-    };
-
-    //--------------
-    // view passengers
-    const handleViewPassengers = async (
-        ride
-    ) => {
-
-        try {
-
-            setSelectedRide(ride);
-
-            setShowPassengers(true);
-
-            setPassengersLoading(true);
-
-            setPassengers([]);
-
-            setError("");
-
-
-            const response =
-                await getRidePassengers(
-                    ride.id
-                );
-
-
-            console.log(
-                "Ride passengers:",
-                response
-            );
-
-
-            setPassengers(
-                response.data || []
-            );
-
-
-        } catch (err) {
-
-            console.error(
-                "Passenger loading error:",
-                err
-            );
-
-            setError(
-                err.response?.data?.message ||
-                "Unable to load passengers."
-            );
-
-        } finally {
-
-            setPassengersLoading(false);
         }
     };
 
@@ -489,8 +420,8 @@ const MyRides = () => {
                     >
 
                         {status
-                                .charAt(0)
-                                .toUpperCase() +
+                            .charAt(0)
+                            .toUpperCase() +
                             status.slice(1)}
 
                     </button>
@@ -508,7 +439,7 @@ const MyRides = () => {
 
                     <Loader2
                         size={35}
-                        className="mb-2"
+                        className="mb-2 animate-spin"
                     />
 
                     <p className="text-muted">
@@ -907,6 +838,7 @@ const MyRides = () => {
 
                                                         <Loader2
                                                             size={18}
+                                                            className="animate-spin"
                                                         />
 
                                                     )}
