@@ -116,54 +116,72 @@ h6 {
 }
 
 /* =========================================================
-   YELLOW & BLACK BUTTONS DESIGN SYSTEM (Login, Register, Logout)
+   PREMIUM YELLOW & BLACK BUTTONS DESIGN SYSTEM
    ========================================================= */
 
-/* Primary Yellow Button (Vibrant & Energetic) */
+/* Primary Yellow Button (Vibrant & Energetic, Modern Gradient) */
 .btn-yb-yellow {
-  background-color: var(--brand-yellow) !important;
+  background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%) !important;
   color: var(--brand-black) !important;
-  border: 1px solid var(--brand-yellow-hover) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
   font-weight: 700 !important;
-  border-radius: 10px !important;
-  padding: 0.5rem 1.25rem !important;
-  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 12px !important;
+  padding: 0.6rem 1.4rem !important;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255,255,255,0.6) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-yb-yellow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: all 0.4s ease;
+}
+
+.btn-yb-yellow:hover::after {
+  left: 100%;
 }
 
 .btn-yb-yellow:hover {
-  background-color: var(--brand-yellow-hover) !important;
+  background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
   color: #000000 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(250, 204, 21, 0.6) !important;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5), inset 0 1px 0 rgba(255,255,255,0.8) !important;
 }
 
 .btn-yb-yellow:active {
-  transform: translateY(0);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4) !important;
 }
 
-/* Secondary Black Button (Sleek & Obsidian) */
+/* Secondary Black Button (Sleek, Obsidian, Glassy) */
 .btn-yb-black {
-  background-color: var(--brand-black) !important;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
   color: var(--brand-yellow) !important;
-  border: 1.5px solid var(--brand-yellow) !important;
+  border: 1px solid rgba(250, 204, 21, 0.3) !important;
   font-weight: 700 !important;
-  border-radius: 10px !important;
-  padding: 0.5rem 1.25rem !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 12px !important;
+  padding: 0.6rem 1.4rem !important;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.4), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
 
 .btn-yb-black:hover {
-  background-color: var(--brand-black-hover) !important;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important;
   color: #ffffff !important;
-  border-color: #ffffff !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.6), inset 0 1px 0 rgba(255,255,255,0.2) !important;
 }
 
 .btn-yb-black:active {
-  transform: translateY(0);
+  transform: translateY(1px) scale(0.98);
 }
 
 /* Logout Button (High contrast, stylish warning tone with Yellow touch) */
@@ -195,33 +213,80 @@ h6 {
   letter-spacing: 0.02em;
 }
 
-/* Base Bootstrap Override Helpers for Yellow-Black fallback */
+/* Base Bootstrap Override Helpers for Premium default buttons */
 .btn-primary {
-  background-color: var(--brand-black) !important;
-  border-color: var(--brand-black) !important;
+  background: linear-gradient(135deg, var(--brand-black) 0%, #1e293b 100%) !important;
+  border: 1px solid rgba(250,204,21,0.2) !important;
   color: var(--brand-yellow) !important;
   font-weight: 700;
-  border-radius: 10px;
-  transition: all 0.2s ease-in-out;
+  border-radius: 12px;
+  padding: 0.6rem 1.4rem;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .btn-primary:hover {
-  background-color: var(--brand-yellow) !important;
-  border-color: var(--brand-yellow) !important;
-  color: var(--brand-black) !important;
+  background: linear-gradient(135deg, var(--brand-black-light) 0%, #475569 100%) !important;
+  border-color: rgba(250,204,21,0.6) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3), inset 0 1px 0 rgba(255,255,255,0.1) !important;
 }
 
 .btn-outline-primary {
+  background: rgba(15, 23, 42, 0.05) !important;
+  backdrop-filter: blur(8px);
   color: var(--brand-black) !important;
-  border-color: var(--brand-yellow-dark) !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.3) !important;
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: 12px;
+  padding: 0.6rem 1.4rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .btn-outline-primary:hover {
-  background-color: var(--brand-yellow) !important;
-  color: var(--brand-black) !important;
-  border-color: var(--brand-yellow) !important;
+  background: var(--brand-black) !important;
+  color: var(--brand-yellow) !important;
+  border-color: var(--brand-black) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2) !important;
+}
+
+/* Glassmorphism Generic Card classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
+  border-radius: 16px !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px 0 rgba(31, 38, 135, 0.15) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Dark card hover — keeps dark background, just lifts */
+.dark-card-hover {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.dark-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.35) !important;
+  border-color: rgba(250, 204, 21, 0.3) !important;
+}
+
+/* Premium Gradient Text Utility */
+.premium-gradient-text {
+  background: linear-gradient(135deg, #facc15 0%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }
 
 /* Extra Utility Classes for Low Noise UI */
@@ -262,4 +327,34 @@ h6 {
 
 .footer-link:hover {
   color: #ffffff !important;
+}
+
+/* =========================================================
+   GLOBAL READABILITY IMPROVEMENTS
+   ========================================================= */
+
+/* Card body text — upgrade from 50% opacity white to soft gray-200 (#e5e7eb)
+   Better contrast, less eye strain, modern premium look */
+.card .text-white-50,
+.card p.text-white-50,
+.card span.text-white-50,
+.card li .text-white-50 {
+  color: #e5e7eb !important;
+  opacity: 1 !important;
+}
+
+/* Hero subtitle text — make it bold & clearly visible (not faded gray) */
+.lead.text-secondary,
+p.lead.text-secondary {
+  color: #374151 !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+/* Small muted label inside dark cards — also upgrade */
+.card .text-white-50.small,
+.card small.text-white-50,
+.card p.small.text-white-50 {
+  color: #d1d5db !important;
+  opacity: 1 !important;
 }

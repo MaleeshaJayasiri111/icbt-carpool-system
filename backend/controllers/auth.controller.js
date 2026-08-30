@@ -27,11 +27,11 @@ const register = async (req, res) => {
             });
         }
 
-        if (!["driver", "passenger"].includes(role)) {
+        if (!["driver", "passenger", "admin"].includes(role)) {
             return res.status(400).json({
                 success: false,
                 message:
-                    "Registration role must be driver or passenger",
+                    "Registration role must be driver, passenger, or admin",
             });
         }
 

@@ -16,8 +16,8 @@ const Footer = () => {
                             Connecting students and staff for safe, reliable, and cost-effective carpooling across ICBT campuses.
                         </p>
                         <div className="d-flex gap-3" style={{ color: '#94a3b8' }}>
-                            <span className="small"><MapPin size={16} className="text-primary me-1" /> Colombo 04</span>
-                            <span className="small"><Mail size={16} className="text-primary me-1" /> support@icbtcarpool.lk</span>
+                            <span className="small"><MapPin size={16} className="text-warning me-1" /> Kandy</span>
+                            <span className="small"><Mail size={16} className="text-warning me-1" /> support@icbtcarpool.lk</span>
                         </div>
                     </div>
 
