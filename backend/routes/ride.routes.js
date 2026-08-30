@@ -5,7 +5,7 @@ const {
     getMyRides,
     getRideById,
     updateRide,
-    cancelRide, completeRide,getAvailableRides,searchMatchingRides,getRidePassengers
+    cancelRide, completeRide,getAvailableRides,searchMatchingRides,getRidePassengers,calculateFare
 } = require("../controllers/ride.controller");
 
 const {
@@ -48,6 +48,13 @@ router.post(
     authenticate,
     requirePassenger,
     searchMatchingRides
+);
+
+router.post(
+    "/calculate-fare",
+    authenticate,
+    requireDriver,
+    calculateFare
 );
 
 

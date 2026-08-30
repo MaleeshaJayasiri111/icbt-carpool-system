@@ -14,7 +14,7 @@ import {
     Hourglass,
     ShieldCheck,
     X,
-    WalletCards,
+    WalletCards,MessageCircle
 } from "lucide-react";
 
 import {
@@ -22,10 +22,11 @@ import {
     makePayment,
     cancelBooking,
 } from "../../services/bookingService";
+import {useNavigate} from "react-router-dom";
 
 
 const PassengerMyRides = () => {
-
+    const navigate = useNavigate();
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -769,6 +770,36 @@ const PassengerMyRides = () => {
                                                         </div>
 
                                                     </div>
+
+                                                )}
+
+                                            {/* CHAT */}
+
+                                            {booking.status ===
+                                                "confirmed" &&
+                                                [
+                                                    "available",
+                                                    "full",
+                                                ].includes(
+                                                    ride?.status
+                                                ) && (
+
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-warning btn-sm fw-semibold"
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `/passenger/rides/${ride.id}/chat`
+                                                            )
+                                                        }
+                                                    >
+                                                        <MessageCircle
+                                                            size={16}
+                                                            className="me-1"
+                                                        />
+
+                                                        Chat
+                                                    </button>
 
                                                 )}
 

@@ -1,23 +1,7 @@
-import React, { useEffect, useState } from "react";
-
-import {
-    MapContainer,
-    TileLayer,
-    Marker,
-    useMap,
-} from "react-leaflet";
-
-import {
-    MapPin,
-    Navigation,
-    Search,
-    Car,
-    CalendarDays,
-    Clock,
-    Users,
-    Banknote,
-    Loader2,
-} from "lucide-react";
+import React, {
+    useEffect,
+    useState,
+} from "react";
 
 import {
     getMyVehicles,
@@ -25,82 +9,30 @@ import {
 
 import {
     createRide,
+    calculateRideFare,
 } from "../../services/rideService";
 
 
-// ========================================
-// MAP CONTROLLER
-// ========================================
+// COMPONENTS
 
-const MapController = ({
-                           start,
-                           destination,
-                       }) => {
+import VehicleSelector
+    from "../../components/ride/VehicleSelector";
 
-    const map = useMap();
+import RouteSearch
+    from "../../components/ride/RouteSearch";
 
-    useEffect(() => {
+import RideDetails
+    from "../../components/ride/RideDetails";
 
-        if (start && destination) {
+import FareCalculator
+    from "../../components/ride/FareCalculator";
 
-            map.fitBounds(
-                [
-                    [
-                        start.latitude,
-                        start.longitude,
-                    ],
-                    [
-                        destination.latitude,
-                        destination.longitude,
-                    ],
-                ],
-                {
-                    padding: [50, 50],
-                }
-            );
-
-            return;
-        }
-
-
-        if (start) {
-
-            map.setView(
-                [
-                    start.latitude,
-                    start.longitude,
-                ],
-                14
-            );
-        }
-
-
-        if (destination) {
-
-            map.setView(
-                [
-                    destination.latitude,
-                    destination.longitude,
-                ],
-                14
-            );
-        }
-
-    }, [
-        start,
-        destination,
-        map,
-    ]);
-
-    return null;
-};
-
-
-// ========================================
-// CREATE RIDE
-// ========================================
+import RoutePreview
+    from "../../components/ride/RoutePreview";
 
 const CreateRide = () => {
+
+    // VEHICLES
 
     const [
         vehicles,
@@ -112,6 +44,8 @@ const CreateRide = () => {
         setLoadingVehicles,
     ] = useState(true);
 
+
+ //submit state
     const [
         saving,
         setSaving,
@@ -128,10 +62,23 @@ const CreateRide = () => {
     ] = useState("");
 
 
-    // ========================================
-    // LOCATION SEARCH STATE
-    // ========================================
+    // FARE STATE
+    const [
+        fareEstimate,
+        setFareEstimate,
+    ] = useState(null);
 
+    const [
+        fareLoading,
+        setFareLoading,
+    ] = useState(false);
+
+    const [
+        fareError,
+        setFareError,
+    ] = useState("");
+
+    //location state
     const [
         startSearch,
         setStartSearch,
@@ -158,10 +105,7 @@ const CreateRide = () => {
     ] = useState("");
 
 
-    // ========================================
-    // FORM
-    // ========================================
-
+    // FORM DATA
     const [
         formData,
         setFormData,
@@ -184,10 +128,7 @@ const CreateRide = () => {
         feePerSeat: "",
     });
 
-
-    // ========================================
     // LOAD VEHICLES
-    // ========================================
 
     const loadVehicles = async () => {
 
@@ -226,18 +167,20 @@ const CreateRide = () => {
         } finally {
 
             setLoadingVehicles(false);
+
         }
     };
 
+    // LOAD VEHICLES ON PAGE LOAD
+
 
     useEffect(() => {
+
         loadVehicles();
+
     }, []);
 
-
-    // ========================================
     // NORMAL INPUT CHANGE
-    // ========================================
 
     const handleChange = (e) => {
 
@@ -250,15 +193,14 @@ const CreateRide = () => {
         setFormData(
             (prev) => ({
                 ...prev,
+
                 [name]: value,
             })
         );
+
     };
 
-
-    // ========================================
     // SEARCH LOCATION
-    // ========================================
 
     const searchLocation = async (
         type
@@ -308,6 +250,7 @@ const CreateRide = () => {
                 throw new Error(
                     "Location search failed"
                 );
+
             }
 
 
@@ -326,6 +269,7 @@ const CreateRide = () => {
                 setDestinationResults(
                     data
                 );
+
             }
 
 
@@ -334,8 +278,8 @@ const CreateRide = () => {
                 setError(
                     "No locations found. Try another search."
                 );
-            }
 
+            }
 
         } catch (err) {
 
@@ -350,14 +294,14 @@ const CreateRide = () => {
 
         } finally {
 
-            setSearchingLocation("");
+            setSearchingLocation(
+                ""
+            );
+
         }
     };
 
-
-    // ========================================
-    // SELECT SEARCH RESULT
-    // ========================================
+    // SELECT LOCATION FROM SEARCH
 
     const selectLocation = (
         type,
@@ -377,6 +321,7 @@ const CreateRide = () => {
                 location.display_name
             );
 
+
             setFormData(
                 (prev) => ({
                     ...prev,
@@ -392,6 +337,7 @@ const CreateRide = () => {
                 })
             );
 
+
             setStartResults([]);
 
         } else {
@@ -399,6 +345,7 @@ const CreateRide = () => {
             setDestinationSearch(
                 location.display_name
             );
+
 
             setFormData(
                 (prev) => ({
@@ -415,25 +362,145 @@ const CreateRide = () => {
                 })
             );
 
+
             setDestinationResults([]);
+
         }
 
 
         setError("");
+
     };
 
 
     // ========================================
-    // SUBMIT
+    // CALCULATE FARE
     // ========================================
 
-    const handleSubmit = async (e) => {
+    const handleCalculateFare =
+        async () => {
+
+            if (!formData.vehicleId) {
+
+                setFareError(
+                    "Please select a vehicle first."
+                );
+
+                return;
+            }
+
+
+            if (
+                !formData.startLatitude ||
+                !formData.startLongitude ||
+                !formData.destinationLatitude ||
+                !formData.destinationLongitude
+            ) {
+
+                setFareError(
+                    "Please select both start and destination locations."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                setFareLoading(true);
+
+                setFareError("");
+
+
+                const response =
+                    await calculateRideFare({
+
+                        vehicleId:
+                        formData.vehicleId,
+
+                        startLatitude:
+                        formData.startLatitude,
+
+                        startLongitude:
+                        formData.startLongitude,
+
+                        destinationLatitude:
+                        formData.destinationLatitude,
+
+                        destinationLongitude:
+                        formData.destinationLongitude,
+
+                    });
+
+
+                console.log(
+                    "Fare calculation:",
+                    response
+                );
+
+
+                const fare =
+                    response.data;
+
+
+                setFareEstimate(
+                    fare
+                );
+
+
+                // Automatically use
+                // recommended fare
+
+                setFormData(
+                    (prev) => ({
+                        ...prev,
+
+                        feePerSeat:
+                        fare
+                            .pricing
+                            .suggestedFare,
+                    })
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Fare calculation error:",
+                    error
+                );
+
+
+                setFareError(
+                    error.response?.data?.message ||
+                    "Unable to calculate fare."
+                );
+
+            } finally {
+
+                setFareLoading(false);
+
+            }
+
+        };
+
+
+    // ========================================
+    // SUBMIT CREATE RIDE
+    // ========================================
+
+    const handleSubmit = async (
+        e
+    ) => {
 
         e.preventDefault();
 
+
         setError("");
+
         setSuccess("");
 
+
+        // VEHICLE VALIDATION
 
         if (!formData.vehicleId) {
 
@@ -444,6 +511,8 @@ const CreateRide = () => {
             return;
         }
 
+
+        // START VALIDATION
 
         if (
             formData.startLatitude === null ||
@@ -458,6 +527,8 @@ const CreateRide = () => {
         }
 
 
+        // DESTINATION VALIDATION
+
         if (
             formData.destinationLatitude === null ||
             formData.destinationLongitude === null
@@ -470,6 +541,8 @@ const CreateRide = () => {
             return;
         }
 
+
+        // RIDE DETAILS VALIDATION
 
         if (
             !formData.rideDate ||
@@ -529,6 +602,7 @@ const CreateRide = () => {
                     Number(
                         formData.feePerSeat
                     ),
+
             };
 
 
@@ -548,7 +622,9 @@ const CreateRide = () => {
             );
 
 
-            // Reset form
+            // ========================================
+            // RESET FORM
+            // ========================================
 
             setFormData({
 
@@ -567,14 +643,21 @@ const CreateRide = () => {
 
                 totalSeats: "",
                 feePerSeat: "",
+
             });
 
 
             setStartSearch("");
+
             setDestinationSearch("");
 
             setStartResults([]);
+
             setDestinationResults([]);
+
+            setFareEstimate(null);
+
+            setFareError("");
 
 
         } catch (err) {
@@ -584,6 +667,7 @@ const CreateRide = () => {
                 err
             );
 
+
             setError(
                 err.response?.data?.message ||
                 "Unable to create ride."
@@ -592,7 +676,9 @@ const CreateRide = () => {
         } finally {
 
             setSaving(false);
+
         }
+
     };
 
 
@@ -614,42 +700,101 @@ const CreateRide = () => {
 
     return (
 
-        <div className="container-fluid p-4 p-md-5">
+        <div
+            className="container-fluid p-4 p-md-5"
+            style={{
+                backgroundColor:
+                    "#ffffff",
 
+                minHeight:
+                    "100vh",
+            }}
+        >
 
-            {/* HEADER */}
+            {/* ========================================
+                PAGE HEADER
+            ======================================== */}
 
             <div className="mb-4">
 
-                <h2 className="fw-bold mb-1">
+                <div
+                    className="d-inline-flex align-items-center px-3 py-2 rounded-pill mb-3"
+                    style={{
+                        backgroundColor:
+                            "#fff8db",
+
+                        color:
+                            "#0d6efd",
+
+                        fontWeight:
+                            "600",
+
+                        fontSize:
+                            "0.85rem",
+                    }}
+                >
+
+                    Create a new ride
+
+                </div>
+
+
+                <h2
+                    className="fw-bold mb-1"
+                    style={{
+                        color:
+                            "#0d6efd",
+                    }}
+                >
                     Create Ride
                 </h2>
 
+
                 <p className="text-muted mb-0">
-                    Search and select your route,
-                    then enter the ride details.
+
+                    Search your route,
+                    choose your vehicle,
+                    and create a ride
+                    for passengers.
+
                 </p>
 
             </div>
 
 
+            {/* ========================================
+                ERROR
+            ======================================== */}
+
             {error && (
 
-                <div className="alert alert-danger">
+                <div
+                    className="alert alert-danger border-0 shadow-sm"
+                >
                     {error}
                 </div>
 
             )}
 
 
+            {/* ========================================
+                SUCCESS
+            ======================================== */}
+
             {success && (
 
-                <div className="alert alert-success">
+                <div
+                    className="alert alert-success border-0 shadow-sm"
+                >
                     {success}
                 </div>
 
             )}
 
+
+            {/* ========================================
+                FORM
+            ======================================== */}
 
             <form
                 onSubmit={
@@ -669,866 +814,159 @@ const CreateRide = () => {
 
                         {/* VEHICLE */}
 
-                        <div className="card border-0 shadow-sm mb-4">
+                        <VehicleSelector
 
-                            <div className="card-body p-4">
+                            vehicles={
+                                vehicles
+                            }
 
-                                <h5 className="fw-bold mb-3 d-flex align-items-center gap-2">
+                            loadingVehicles={
+                                loadingVehicles
+                            }
 
-                                    <Car
-                                        size={20}
-                                        className="text-warning"
-                                    />
+                            formData={
+                                formData
+                            }
 
-                                    Vehicle
+                            handleChange={
+                                handleChange
+                            }
 
-                                </h5>
+                            selectedVehicle={
+                                selectedVehicle
+                            }
 
+                        />
 
-                                {loadingVehicles ? (
 
-                                    <div className="text-muted">
-                                        Loading vehicles...
-                                    </div>
+                        {/* ROUTE SEARCH */}
 
-                                ) : vehicles.length === 0 ? (
+                        <RouteSearch
 
-                                    <div className="alert alert-warning mb-0">
+                            formData={
+                                formData
+                            }
 
-                                        You need to add a vehicle
-                                        before creating a ride.
+                            setFormData={
+                                setFormData
+                            }
 
-                                    </div>
+                            startSearch={
+                                startSearch
+                            }
 
-                                ) : (
+                            setStartSearch={
+                                setStartSearch
+                            }
 
-                                    <select
-                                        className="form-select"
-                                        name="vehicleId"
-                                        value={
-                                            formData.vehicleId
-                                        }
-                                        onChange={
-                                            handleChange
-                                        }
-                                        required
-                                    >
+                            destinationSearch={
+                                destinationSearch
+                            }
 
-                                        <option value="">
-                                            Select vehicle
-                                        </option>
+                            setDestinationSearch={
+                                setDestinationSearch
+                            }
 
+                            startResults={
+                                startResults
+                            }
 
-                                        {vehicles.map(
-                                            (vehicle) => (
+                            destinationResults={
+                                destinationResults
+                            }
 
-                                                <option
-                                                    key={
-                                                        vehicle.id
-                                                    }
-                                                    value={
-                                                        vehicle.id
-                                                    }
-                                                >
+                            searchingLocation={
+                                searchingLocation
+                            }
 
-                                                    {vehicle.brand}{" "}
-                                                    {vehicle.model}
-                                                    {" - "}
-                                                    {vehicle.vehicle_number}
+                            searchLocation={
+                                searchLocation
+                            }
 
-                                                </option>
+                            selectLocation={
+                                selectLocation
+                            }
 
-                                            )
-                                        )}
+                        />
 
-                                    </select>
 
-                                )}
+                        {/* RIDE DETAILS */}
 
+                        <RideDetails
 
-                                {selectedVehicle && (
+                            formData={
+                                formData
+                            }
 
-                                    <div className="bg-light rounded-3 p-3 mt-3 small">
+                            handleChange={
+                                handleChange
+                            }
 
-                                        <div>
+                            selectedVehicle={
+                                selectedVehicle
+                            }
 
-                                            <strong>
-                                                Capacity:
-                                            </strong>{" "}
+                            fareEstimate={
+                                fareEstimate
+                            }
 
-                                            {
-                                                selectedVehicle.seat_capacity
-                                            }{" "}
-                                            seats
+                        />
 
-                                        </div>
 
+                        {/* FARE */}
 
-                                        <div>
+                        <FareCalculator
 
-                                            <strong>
-                                                Type:
-                                            </strong>{" "}
+                            formData={
+                                formData
+                            }
 
-                                            {
-                                                selectedVehicle.vehicle_type
-                                            }
+                            fareEstimate={
+                                fareEstimate
+                            }
 
-                                        </div>
+                            fareLoading={
+                                fareLoading
+                            }
 
-                                    </div>
+                            fareError={
+                                fareError
+                            }
 
-                                )}
+                            handleCalculateFare={
+                                handleCalculateFare
+                            }
 
-                            </div>
-
-                        </div>
-
-
-                        {/* =================================
-                            ROUTE SEARCH
-                        ================================= */}
-
-                        <div className="card border-0 shadow-sm mb-4">
-
-                            <div className="card-body p-4">
-
-                                <h5 className="fw-bold mb-4">
-                                    Route Details
-                                </h5>
-
-
-                                {/* START */}
-
-                                <div className="mb-4">
-
-                                    <label className="form-label fw-semibold">
-
-                                        <MapPin
-                                            size={17}
-                                            className="me-2 text-success"
-                                        />
-
-                                        Start Location
-
-                                    </label>
-
-
-                                    <div className="input-group">
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="e.g. Anuradhapura"
-                                            value={
-                                                startSearch
-                                            }
-                                            onChange={(e) => {
-
-                                                setStartSearch(
-                                                    e.target.value
-                                                );
-
-                                                setFormData(
-                                                    (prev) => ({
-                                                        ...prev,
-
-                                                        startLocation:
-                                                            "",
-
-                                                        startLatitude:
-                                                            null,
-
-                                                        startLongitude:
-                                                            null,
-                                                    })
-                                                );
-
-                                            }}
-                                            onKeyDown={(e) => {
-
-                                                if (
-                                                    e.key ===
-                                                    "Enter"
-                                                ) {
-
-                                                    e.preventDefault();
-
-                                                    searchLocation(
-                                                        "start"
-                                                    );
-                                                }
-                                            }}
-                                        />
-
-
-                                        <button
-                                            type="button"
-                                            className="btn btn-warning"
-                                            onClick={() =>
-                                                searchLocation(
-                                                    "start"
-                                                )
-                                            }
-                                            disabled={
-                                                searchingLocation ===
-                                                "start"
-                                            }
-                                        >
-
-                                            {searchingLocation ===
-                                            "start" ? (
-
-                                                <Loader2
-                                                    size={17}
-                                                />
-
-                                            ) : (
-
-                                                <Search
-                                                    size={17}
-                                                />
-
-                                            )}
-
-                                        </button>
-
-                                    </div>
-
-
-                                    {/* START SUGGESTIONS */}
-
-                                    {startResults.length >
-                                        0 && (
-
-                                            <div
-                                                className="list-group mt-2 shadow-sm"
-                                                style={{
-                                                    maxHeight:
-                                                        "220px",
-
-                                                    overflowY:
-                                                        "auto",
-                                                }}
-                                            >
-
-                                                {startResults.map(
-                                                    (
-                                                        location
-                                                    ) => (
-
-                                                        <button
-                                                            type="button"
-                                                            key={
-                                                                location.place_id
-                                                            }
-                                                            className="list-group-item list-group-item-action text-start"
-                                                            onClick={() =>
-                                                                selectLocation(
-                                                                    "start",
-                                                                    location
-                                                                )
-                                                            }
-                                                        >
-
-                                                            <MapPin
-                                                                size={14}
-                                                                className="me-2 text-success"
-                                                            />
-
-                                                            {
-                                                                location.display_name
-                                                            }
-
-                                                        </button>
-
-                                                    )
-                                                )}
-
-                                            </div>
-
-                                        )}
-
-
-                                    {formData.startLatitude !==
-                                        null && (
-
-                                            <div className="small text-success mt-2">
-
-                                                ✓ Start selected
-
-                                            </div>
-
-                                        )}
-
-                                </div>
-
-
-                                {/* DESTINATION */}
-
-                                <div>
-
-                                    <label className="form-label fw-semibold">
-
-                                        <Navigation
-                                            size={17}
-                                            className="me-2 text-danger"
-                                        />
-
-                                        Destination
-
-                                    </label>
-
-
-                                    <div className="input-group">
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Search destination..."
-                                            value={
-                                                destinationSearch
-                                            }
-                                            onChange={(e) => {
-
-                                                setDestinationSearch(
-                                                    e.target.value
-                                                );
-
-                                                setFormData(
-                                                    (prev) => ({
-                                                        ...prev,
-
-                                                        destination:
-                                                            "",
-
-                                                        destinationLatitude:
-                                                            null,
-
-                                                        destinationLongitude:
-                                                            null,
-                                                    })
-                                                );
-
-                                            }}
-                                            onKeyDown={(e) => {
-
-                                                if (
-                                                    e.key ===
-                                                    "Enter"
-                                                ) {
-
-                                                    e.preventDefault();
-
-                                                    searchLocation(
-                                                        "destination"
-                                                    );
-                                                }
-                                            }}
-                                        />
-
-
-                                        <button
-                                            type="button"
-                                            className="btn btn-warning"
-                                            onClick={() =>
-                                                searchLocation(
-                                                    "destination"
-                                                )
-                                            }
-                                            disabled={
-                                                searchingLocation ===
-                                                "destination"
-                                            }
-                                        >
-
-                                            {searchingLocation ===
-                                            "destination" ? (
-
-                                                <Loader2
-                                                    size={17}
-                                                />
-
-                                            ) : (
-
-                                                <Search
-                                                    size={17}
-                                                />
-
-                                            )}
-
-                                        </button>
-
-                                    </div>
-
-
-                                    {/* DESTINATION RESULTS */}
-
-                                    {destinationResults.length >
-                                        0 && (
-
-                                            <div
-                                                className="list-group mt-2 shadow-sm"
-                                                style={{
-                                                    maxHeight:
-                                                        "220px",
-
-                                                    overflowY:
-                                                        "auto",
-                                                }}
-                                            >
-
-                                                {destinationResults.map(
-                                                    (
-                                                        location
-                                                    ) => (
-
-                                                        <button
-                                                            type="button"
-                                                            key={
-                                                                location.place_id
-                                                            }
-                                                            className="list-group-item list-group-item-action text-start"
-                                                            onClick={() =>
-                                                                selectLocation(
-                                                                    "destination",
-                                                                    location
-                                                                )
-                                                            }
-                                                        >
-
-                                                            <Navigation
-                                                                size={14}
-                                                                className="me-2 text-danger"
-                                                            />
-
-                                                            {
-                                                                location.display_name
-                                                            }
-
-                                                        </button>
-
-                                                    )
-                                                )}
-
-                                            </div>
-
-                                        )}
-
-
-                                    {formData.destinationLatitude !==
-                                        null && (
-
-                                            <div className="small text-success mt-2">
-
-                                                ✓ Destination selected
-
-                                            </div>
-
-                                        )}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* =================================
-                            RIDE DETAILS
-                        ================================= */}
-
-                        <div className="card border-0 shadow-sm">
-
-                            <div className="card-body p-4">
-
-                                <h5 className="fw-bold mb-3">
-                                    Ride Details
-                                </h5>
-
-
-                                <div className="row g-3">
-
-
-                                    {/* DATE */}
-
-                                    <div className="col-md-6">
-
-                                        <label className="form-label fw-semibold">
-                                            Ride Date
-                                        </label>
-
-
-                                        <div className="input-group">
-
-                                            <span className="input-group-text">
-
-                                                <CalendarDays
-                                                    size={17}
-                                                />
-
-                                            </span>
-
-
-                                            <input
-                                                type="date"
-                                                className="form-control"
-                                                name="rideDate"
-                                                value={
-                                                    formData.rideDate
-                                                }
-                                                onChange={
-                                                    handleChange
-                                                }
-                                                required
-                                            />
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* TIME */}
-
-                                    <div className="col-md-6">
-
-                                        <label className="form-label fw-semibold">
-                                            Departure Time
-                                        </label>
-
-
-                                        <div className="input-group">
-
-                                            <span className="input-group-text">
-
-                                                <Clock
-                                                    size={17}
-                                                />
-
-                                            </span>
-
-
-                                            <input
-                                                type="time"
-                                                className="form-control"
-                                                name="departureTime"
-                                                value={
-                                                    formData.departureTime
-                                                }
-                                                onChange={
-                                                    handleChange
-                                                }
-                                                required
-                                            />
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* SEATS */}
-
-                                    <div className="col-md-6">
-
-                                        <label className="form-label fw-semibold">
-                                            Seats Offered
-                                        </label>
-
-
-                                        <div className="input-group">
-
-                                            <span className="input-group-text">
-
-                                                <Users
-                                                    size={17}
-                                                />
-
-                                            </span>
-
-
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                max={
-                                                    selectedVehicle
-                                                        ?.seat_capacity ||
-                                                    undefined
-                                                }
-                                                className="form-control"
-                                                name="totalSeats"
-                                                value={
-                                                    formData.totalSeats
-                                                }
-                                                onChange={
-                                                    handleChange
-                                                }
-                                                required
-                                            />
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* FEE */}
-
-                                    <div className="col-md-6">
-
-                                        <label className="form-label fw-semibold">
-                                            Fee Per Seat
-                                        </label>
-
-
-                                        <div className="input-group">
-
-                                            <span className="input-group-text">
-
-                                                <Banknote
-                                                    size={17}
-                                                />
-
-                                            </span>
-
-
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="form-control"
-                                                name="feePerSeat"
-                                                placeholder="e.g. 500"
-                                                value={
-                                                    formData.feePerSeat
-                                                }
-                                                onChange={
-                                                    handleChange
-                                                }
-                                                required
-                                            />
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
+                        />
 
                     </div>
 
 
                     {/* =================================
-                        RIGHT SIDE MAP
+                        RIGHT SIDE
                     ================================= */}
 
                     <div className="col-lg-7">
 
-                        <div className="card border-0 shadow-sm h-100">
+                        <RoutePreview
 
-                            <div className="card-body p-4">
+                            formData={
+                                formData
+                            }
 
+                            saving={
+                                saving
+                            }
 
-                                <h5 className="fw-bold mb-2">
-                                    Route Preview
-                                </h5>
+                            vehiclesLength={
+                                vehicles.length
+                            }
 
-                                <p className="text-muted small mb-3">
-                                    Search and select your start
-                                    and destination to preview them
-                                    on the map.
-                                </p>
+                            fareEstimate={
+                                fareEstimate
+                            }
 
-
-                                <div
-                                    style={{
-                                        height: "500px",
-                                        borderRadius:
-                                            "12px",
-                                        overflow:
-                                            "hidden",
-                                    }}
-                                >
-
-                                    <MapContainer
-                                        center={[
-                                            7.8731,
-                                            80.7718,
-                                        ]}
-                                        zoom={8}
-                                        style={{
-                                            height:
-                                                "100%",
-
-                                            width:
-                                                "100%",
-                                        }}
-                                    >
-
-                                        <TileLayer
-                                            attribution="&copy; OpenStreetMap contributors"
-                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                        />
-
-
-                                        <MapController
-
-                                            start={
-                                                formData.startLatitude !==
-                                                null
-                                                    ? {
-                                                        latitude:
-                                                        formData.startLatitude,
-
-                                                        longitude:
-                                                        formData.startLongitude,
-                                                    }
-                                                    : null
-                                            }
-
-                                            destination={
-                                                formData.destinationLatitude !==
-                                                null
-                                                    ? {
-                                                        latitude:
-                                                        formData.destinationLatitude,
-
-                                                        longitude:
-                                                        formData.destinationLongitude,
-                                                    }
-                                                    : null
-                                            }
-
-                                        />
-
-
-                                        {/* START */}
-
-                                        {formData.startLatitude !==
-                                            null && (
-
-                                                <Marker
-                                                    position={[
-                                                        formData.startLatitude,
-                                                        formData.startLongitude,
-                                                    ]}
-                                                />
-
-                                            )}
-
-
-                                        {/* DESTINATION */}
-
-                                        {formData.destinationLatitude !==
-                                            null && (
-
-                                                <Marker
-                                                    position={[
-                                                        formData.destinationLatitude,
-                                                        formData.destinationLongitude,
-                                                    ]}
-                                                />
-
-                                            )}
-
-                                    </MapContainer>
-
-                                </div>
-
-
-                                {/* COORDINATES */}
-
-                                <div className="row g-3 mt-2">
-
-
-                                    <div className="col-md-6">
-
-                                        <div className="bg-light p-3 rounded">
-
-                                            <strong>
-                                                Start
-                                            </strong>
-
-                                            <div className="small text-muted mt-1">
-
-                                                {formData.startLatitude !==
-                                                null
-                                                    ? `${formData.startLatitude.toFixed(
-                                                        6
-                                                    )}, ${formData.startLongitude.toFixed(
-                                                        6
-                                                    )}`
-                                                    : "Not selected"}
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    <div className="col-md-6">
-
-                                        <div className="bg-light p-3 rounded">
-
-                                            <strong>
-                                                Destination
-                                            </strong>
-
-                                            <div className="small text-muted mt-1">
-
-                                                {formData.destinationLatitude !==
-                                                null
-                                                    ? `${formData.destinationLatitude.toFixed(
-                                                        6
-                                                    )}, ${formData.destinationLongitude.toFixed(
-                                                        6
-                                                    )}`
-                                                    : "Not selected"}
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                {/* CREATE BUTTON */}
-
-                                <button
-                                    type="submit"
-                                    className="btn btn-warning w-100 fw-bold py-3 mt-4"
-                                    disabled={
-                                        saving ||
-                                        vehicles.length === 0
-                                    }
-                                >
-
-                                    {saving ? (
-
-                                        <>
-                                            <Loader2
-                                                size={18}
-                                                className="me-2"
-                                            />
-
-                                            Creating Ride...
-                                        </>
-
-                                    ) : (
-
-                                        "Create Ride"
-
-                                    )}
-
-                                </button>
-
-                            </div>
-
-                        </div>
+                        />
 
                     </div>
 
@@ -1537,7 +975,10 @@ const CreateRide = () => {
             </form>
 
         </div>
+
     );
+
 };
+
 
 export default CreateRide;

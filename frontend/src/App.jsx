@@ -25,6 +25,7 @@ import PassengerDashboard from "./pages/passengerComponenets/PassengerDashboard"
 import FindRides from "./pages/passengerComponenets/FindRides";
 import PassengerMyRides from "./pages/passengerComponenets/PassengerMyRides";
 import RideHistory from "./pages/passengerComponenets/RideHistory";
+import RideChat from "./pages/shared/RideChat";
 
 function App() {
   return (
@@ -94,6 +95,10 @@ function App() {
                 path="requests"
                 element={<JoinRequests />}
             />
+            <Route
+                path="rides/:rideId/chat"
+                element={<RideChat />}
+            />
 
           </Route>
 
@@ -117,7 +122,12 @@ function App() {
                 path="history"
                 element={<RideHistory />}
             />
+            <Route
+                path="rides/:rideId/chat"
+                element={<RideChat />}
+            />
           </Route>
+
 
         </Routes>
       </BrowserRouter>

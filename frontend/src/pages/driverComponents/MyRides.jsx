@@ -16,8 +16,7 @@ import {
     Loader2,
     Route,
     Pencil,
-    Eye,
-    X,
+    X, MessageCircle,
 } from "lucide-react";
 
 import {
@@ -852,6 +851,26 @@ const MyRides = () => {
                                                 >
                                                     Passengers
                                                 </button>
+
+                                                {/* CHAT */}
+
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-warning btn-sm fw-semibold"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/driver/rides/${ride.id}/chat`
+                                                        )
+                                                    }
+                                                >
+                                                    <MessageCircle
+                                                        size={16}
+                                                        className="me-1"
+                                                    />
+
+                                                    Chat
+                                                </button>
+
 
 
                                                 <button
