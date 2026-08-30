@@ -211,11 +211,8 @@ const JoinRequests = () => {
 
                     {requests.map((request) => {
 
-                        const passenger =
-                            request.users;
-
-                        const ride =
-                            request.rides;
+                        const passenger = request.users;
+                        const ride = request.rides;
 
                         return (
 
@@ -224,46 +221,70 @@ const JoinRequests = () => {
                                 className="col-lg-6"
                             >
 
-                                <div className="card border-0 shadow-sm h-100">
+                                <div
+                                    className="card border-0 h-100 rounded-4 overflow-hidden"
+                                    style={{
+                                        backgroundColor: "#ffffff",
+                                        boxShadow:
+                                            "0 6px 20px rgba(8, 20, 45, 0.08)",
+                                    }}
+                                >
 
                                     <div className="card-body p-4">
 
 
-                                        {/* Passenger */}
+                                        {/* PASSENGER HEADER */}
 
                                         <div className="d-flex align-items-center gap-3 mb-4">
+
+                                            {/* PROFILE IMAGE */}
 
                                             {passenger?.user_profile ? (
 
                                                 <img
                                                     src={passenger.user_profile}
                                                     alt="Passenger"
+                                                    className="flex-shrink-0"
                                                     style={{
-                                                        width: "55px",
-                                                        height: "55px",
+                                                        width: "58px",
+                                                        height: "58px",
                                                         borderRadius: "50%",
                                                         objectFit: "cover",
+                                                        border:
+                                                            "3px solid rgba(250, 204, 21, 0.35)",
                                                     }}
                                                 />
 
                                             ) : (
 
                                                 <div
-                                                    className="bg-warning bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center"
+                                                    className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
                                                     style={{
-                                                        width: "55px",
-                                                        height: "55px",
+                                                        width: "58px",
+                                                        height: "58px",
+                                                        backgroundColor:
+                                                            "rgba(250, 204, 21, 0.12)",
                                                     }}
                                                 >
-                                                    <Users size={23} />
+                                                    <Users
+                                                        size={24}
+                                                        className="text-warning"
+                                                    />
                                                 </div>
 
                                             )}
 
 
-                                            <div>
+                                            {/* PASSENGER DETAILS */}
 
-                                                <h6 className="fw-bold mb-1">
+                                            <div className="flex-grow-1">
+
+                                                <h6
+                                                    className="fw-bold mb-1"
+                                                    style={{
+                                                        color: "#0f172a",
+                                                    }}
+                                                >
                                                     {passenger?.full_name ||
                                                         "Passenger"}
                                                 </h6>
@@ -279,84 +300,181 @@ const JoinRequests = () => {
                                             </div>
 
 
+                                            {/* STATUS */}
+
                                             <span
-                                                className={
+                                                className={`badge rounded-pill px-3 py-2 ${
                                                     request.status === "requested"
-                                                        ? "badge bg-warning text-dark ms-auto"
-                                                        : "badge bg-info text-dark ms-auto"
-                                                }
+                                                        ? "bg-warning text-dark"
+                                                        : "bg-info text-dark"
+                                                }`}
                                             >
+                                {request.status === "requested"
+                                    ? "Requested"
+                                    : "Payment Pending"}
+                            </span>
 
-                                                {request.status === "requested"
-                                                    ? "Requested"
-                                                    : "Waiting for Payment"}
+                                        </div>
 
+
+                                        {/* DIVIDER */}
+
+                                        <div
+                                            className="mb-4"
+                                            style={{
+                                                borderTop:
+                                                    "1px solid rgba(8, 20, 45, 0.08)",
+                                            }}
+                                        />
+
+
+                                        {/* RIDE INFORMATION */}
+
+                                        <div
+                                            className="rounded-4 p-3"
+                                            style={{
+                                                backgroundColor:
+                                                    "rgba(8, 20, 45, 0.04)",
+                                                border:
+                                                    "1px solid rgba(8, 20, 45, 0.06)",
+                                            }}
+                                        >
+
+                                            {/* ROUTE */}
+
+                                            <div className="d-flex align-items-start gap-3 mb-3">
+
+                                                <div
+                                                    className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style={{
+                                                        width: "38px",
+                                                        height: "38px",
+                                                        backgroundColor:
+                                                            "rgba(250, 204, 21, 0.15)",
+                                                    }}
+                                                >
+                                                    <MapPin
+                                                        size={18}
+                                                        className="text-warning"
+                                                    />
+                                                </div>
+
+                                                <div>
+
+                                                    <small className="text-muted d-block mb-1">
+                                                        Requested Ride
+                                                    </small>
+
+                                                    <span
+                                                        className="fw-bold"
+                                                        style={{
+                                                            color: "#0f172a",
+                                                        }}
+                                                    >
+                                        {ride?.start_location}
+                                                        {" → "}
+                                                        {ride?.destination}
+                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            {/* RIDE DETAILS */}
+
+                                            <div className="row g-3 small">
+
+                                                <div className="col-md-4">
+
+                                                    <div className="d-flex align-items-center gap-2">
+
+                                                        <CalendarDays
+                                                            size={16}
+                                                            className="text-warning flex-shrink-0"
+                                                        />
+
+                                                        <div>
+
+                                                            <small className="text-muted d-block">
+                                                                Date
+                                                            </small>
+
+                                                            <span className="fw-semibold">
+                                                {ride?.ride_date}
                                             </span>
 
-                                        </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
 
 
-                                        {/* Ride */}
+                                                <div className="col-md-4">
 
-                                        <div className="bg-light rounded-3 p-3">
+                                                    <div className="d-flex align-items-center gap-2">
 
-                                            <div className="d-flex gap-2 mb-2">
+                                                        <Clock
+                                                            size={16}
+                                                            className="text-warning flex-shrink-0"
+                                                        />
 
-                                                <MapPin size={17} />
+                                                        <div>
 
-                                                <strong>
-                                                    {ride?.start_location}
-                                                    {" → "}
-                                                    {ride?.destination}
-                                                </strong>
+                                                            <small className="text-muted d-block">
+                                                                Departure
+                                                            </small>
+
+                                                            <span className="fw-semibold">
+                                                {ride?.departure_time}
+                                            </span>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div className="col-md-4">
+
+                                                    <div className="d-flex align-items-center gap-2">
+
+                                                        <Banknote
+                                                            size={16}
+                                                            className="text-warning flex-shrink-0"
+                                                        />
+
+                                                        <div>
+
+                                                            <small className="text-muted d-block">
+                                                                Fee
+                                                            </small>
+
+                                                            <span className="fw-semibold">
+                                                Rs. {ride?.fee_per_seat}
+                                            </span>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
 
                                             </div>
 
-
-                                            <div className="row g-2 small text-muted">
-
-                                                <div className="col-md-6">
-                                                    <CalendarDays
-                                                        size={15}
-                                                        className="me-2"
-                                                    />
-
-                                                    {ride?.ride_date}
-                                                </div>
-
-
-                                                <div className="col-md-6">
-                                                    <Clock
-                                                        size={15}
-                                                        className="me-2"
-                                                    />
-
-                                                    {ride?.departure_time}
-                                                </div>
-
-
-                                                <div className="col-md-6">
-                                                    <Banknote
-                                                        size={15}
-                                                        className="me-2"
-                                                    />
-
-                                                    Rs. {ride?.fee_per_seat}
-                                                </div>
-
-                                            </div>
-
                                         </div>
 
 
-                                        {/* Actions */}
+                                        {/* ACTIONS */}
 
                                         {request.status === "requested" && (
 
                                             <div className="d-flex gap-2 mt-4">
 
                                                 <button
-                                                    className="btn btn-success"
+                                                    className="btn btn-success rounded-pill px-4 fw-semibold d-flex align-items-center justify-content-center gap-1"
                                                     disabled={
                                                         actionLoading === request.id
                                                     }
@@ -365,10 +483,7 @@ const JoinRequests = () => {
                                                     }
                                                 >
 
-                                                    <Check
-                                                        size={17}
-                                                        className="me-1"
-                                                    />
+                                                    <Check size={17} />
 
                                                     Accept
 
@@ -376,7 +491,7 @@ const JoinRequests = () => {
 
 
                                                 <button
-                                                    className="btn btn-outline-danger"
+                                                    className="btn btn-outline-danger rounded-pill px-4 fw-semibold d-flex align-items-center justify-content-center gap-1"
                                                     disabled={
                                                         actionLoading === request.id
                                                     }
@@ -385,26 +500,48 @@ const JoinRequests = () => {
                                                     }
                                                 >
 
-                                                    <X
-                                                        size={17}
-                                                        className="me-1"
-                                                    />
+                                                    <X size={17} />
 
                                                     Reject
 
                                                 </button>
+
+
+                                                {actionLoading === request.id && (
+
+                                                    <Loader2
+                                                        size={18}
+                                                        className="align-self-center"
+                                                    />
+
+                                                )}
 
                                             </div>
 
                                         )}
 
 
+                                        {/* PAYMENT PENDING */}
+
                                         {request.status === "payment_pending" && (
 
-                                            <div className="alert alert-info mt-4 mb-0">
+                                            <div
+                                                className="d-flex align-items-center gap-2 rounded-3 mt-4 mb-0 px-3 py-3"
+                                                style={{
+                                                    backgroundColor:
+                                                        "rgba(13, 202, 240, 0.08)",
+                                                    border:
+                                                        "1px solid rgba(13, 202, 240, 0.15)",
+                                                    color: "#087990",
+                                                }}
+                                            >
 
-                                                Request accepted.
-                                                Waiting for passenger payment.
+                                                <Clock size={18} />
+
+                                                <span className="small fw-semibold">
+                                    Request accepted. Waiting for
+                                    passenger payment.
+                                </span>
 
                                             </div>
 
@@ -415,6 +552,7 @@ const JoinRequests = () => {
                                 </div>
 
                             </div>
+
                         );
                     })}
 

@@ -16,7 +16,7 @@ import {
     Loader2,
     Route,
     Pencil,
-    Eye,
+    MessageCircle,
     X,
 } from "lucide-react";
 
@@ -478,21 +478,27 @@ const MyRides = () => {
                     <button
                         key={status}
                         type="button"
-                        className={
+                        onClick={() => setFilter(status)}
+                        className="btn d-flex align-items-center gap-2 px-4 py-2 rounded-pill fw-semibold"
+                        style={
                             filter === status
-                                ? "btn btn-warning fw-semibold"
-                                : "btn btn-outline-dark"
-                        }
-                        onClick={() =>
-                            setFilter(status)
+                                ? {
+                                    backgroundColor: "#facc15",
+                                    color: "#0f172a",
+                                    border: "1px solid #facc15",
+                                    boxShadow:
+                                        "0 4px 12px rgba(250, 204, 21, 0.2)",
+                                }
+                                : {
+                                    backgroundColor:
+                                        "rgba(8, 20, 45, 0.08)",
+                                    color: "#0f172a",
+                                    border:
+                                        "1px solid rgba(8, 20, 45, 0.15)",
+                                }
                         }
                     >
-
-                        {status
-                                .charAt(0)
-                                .toUpperCase() +
-                            status.slice(1)}
-
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
                     </button>
 
                 ))}
@@ -552,377 +558,434 @@ const MyRides = () => {
 
                 <div className="row g-4">
 
-                    {filteredRides.map(
-                        (ride) => (
+                    {filteredRides.map((ride) => (
+
+                        <div
+                            key={ride.id}
+                            className="col-xl-6"
+                        >
 
                             <div
-                                key={ride.id}
-                                className="col-xl-6"
+                                className="card border-0 h-100 rounded-4"
+                                style={{
+                                    backgroundColor: "#ffffff",
+                                    boxShadow:
+                                        "0 6px 20px rgba(8, 20, 45, 0.08)",
+                                    transition: "all 0.2s ease",
+                                }}
                             >
 
-                                <div className="card border-0 shadow-sm h-100">
-
-                                    <div className="card-body p-4">
+                                <div className="card-body p-4">
 
 
-                                        {/* TOP */}
+                                    {/* TOP */}
 
-                                        <div className="d-flex justify-content-between align-items-start mb-4">
+                                    <div className="d-flex justify-content-between align-items-start mb-4">
+
+                                        <div className="pe-3">
+
+                                            <h5
+                                                className="fw-bold mb-1"
+                                                style={{ color: "#0f172a" }}
+                                            >
+                                                {ride.start_location}
+                                                {" → "}
+                                                {ride.destination}
+                                            </h5>
+
+                                            <small className="text-muted">
+                                                Ride ID:{" "}
+                                                {ride.id?.slice(0, 8)}
+                                            </small>
+
+                                        </div>
+
+
+                                        {/* STATUS */}
+
+                                        <span
+                                            className={`badge rounded-pill px-3 py-2 ${getStatusBadge(
+                                                ride.status
+                                            )}`}
+                                        >
+                                            {ride.status}
+                                        </span>
+
+                                    </div>
+
+
+                                    {/* ROUTE */}
+
+                                    <div
+                                        className="rounded-4 p-3 mb-4"
+                                        style={{
+                                            backgroundColor:
+                                                "rgba(8, 20, 45, 0.04)",
+                                            border:
+                                                "1px solid rgba(8, 20, 45, 0.06)",
+                                        }}
+                                    >
+
+                                        <div className="d-flex align-items-center gap-3 mb-3">
+
+                                            <div
+                                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                                style={{
+                                                    width: "38px",
+                                                    height: "38px",
+                                                    backgroundColor:
+                                                        "rgba(25, 135, 84, 0.1)",
+                                                }}
+                                            >
+                                                <MapPin
+                                                    size={19}
+                                                    className="text-success"
+                                                />
+                                            </div>
 
                                             <div>
 
-                                                <h5 className="fw-bold mb-1">
-
-                                                    {
-                                                        ride.start_location
-                                                    }
-
-                                                    {" → "}
-
-                                                    {
-                                                        ride.destination
-                                                    }
-
-                                                </h5>
-
-                                                <small className="text-muted">
-
-                                                    Ride ID:{" "}
-
-                                                    {ride.id?.slice(
-                                                        0,
-                                                        8
-                                                    )}
-
+                                                <small className="text-muted d-block">
+                                                    Start
                                                 </small>
 
+                                                <span
+                                                    className="fw-semibold"
+                                                    style={{
+                                                        color: "#0f172a",
+                                                    }}
+                                                >
+                                                    {ride.start_location}
+                                                </span>
+
                                             </div>
-
-
-                                            <span
-                                                className={`badge ${getStatusBadge(
-                                                    ride.status
-                                                )}`}
-                                            >
-
-                                                {
-                                                    ride.status
-                                                }
-
-                                            </span>
 
                                         </div>
 
 
-                                        {/* ROUTE */}
-
-                                        <div className="bg-light rounded-3 p-3 mb-3">
-
-                                            <div className="d-flex align-items-center gap-3 mb-3">
-
-                                                <MapPin
-                                                    size={20}
-                                                    className="text-success"
-                                                />
-
-                                                <div>
-
-                                                    <small className="text-muted d-block">
-                                                        Start
-                                                    </small>
-
-                                                    <strong>
-                                                        {
-                                                            ride.start_location
-                                                        }
-                                                    </strong>
-
-                                                </div>
-
-                                            </div>
+                                        <div
+                                            className="ms-3"
+                                            style={{
+                                                height: "14px",
+                                                borderLeft:
+                                                    "2px dashed rgba(8, 20, 45, 0.15)",
+                                            }}
+                                        />
 
 
-                                            <div className="d-flex align-items-center gap-3">
+                                        <div className="d-flex align-items-center gap-3 mt-2">
 
+                                            <div
+                                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                                style={{
+                                                    width: "38px",
+                                                    height: "38px",
+                                                    backgroundColor:
+                                                        "rgba(220, 53, 69, 0.1)",
+                                                }}
+                                            >
                                                 <Navigation
-                                                    size={20}
+                                                    size={19}
                                                     className="text-danger"
                                                 />
+                                            </div>
+
+                                            <div>
+
+                                                <small className="text-muted d-block">
+                                                    Destination
+                                                </small>
+
+                                                <span
+                                                    className="fw-semibold"
+                                                    style={{
+                                                        color: "#0f172a",
+                                                    }}
+                                                >
+                                    {ride.destination}
+                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {/* DETAILS */}
+
+                                    <div className="row g-3 small mb-1">
+
+                                        <div className="col-md-6">
+
+                                            <div className="d-flex align-items-center gap-2">
+
+                                                <CalendarDays
+                                                    size={17}
+                                                    className="text-warning flex-shrink-0"
+                                                />
+
+                                                <div>
+                                                    <small className="text-muted d-block">
+                                                        Date
+                                                    </small>
+
+                                                    <span className="fw-semibold">
+                                        {formatDate(
+                                            ride.ride_date
+                                        )}
+                                    </span>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div className="col-md-6">
+
+                                            <div className="d-flex align-items-center gap-2">
+
+                                                <Clock
+                                                    size={17}
+                                                    className="text-warning flex-shrink-0"
+                                                />
+
+                                                <div>
+                                                    <small className="text-muted d-block">
+                                                        Departure
+                                                    </small>
+
+                                                    <span className="fw-semibold">
+                                        {ride.departure_time}
+                                    </span>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div className="col-md-6">
+
+                                            <div className="d-flex align-items-center gap-2">
+
+                                                <Users
+                                                    size={17}
+                                                    className="text-warning flex-shrink-0"
+                                                />
+
+                                                <div>
+                                                    <small className="text-muted d-block">
+                                                        Seats
+                                                    </small>
+
+                                                    <span className="fw-semibold">
+                                        {ride.available_seats}
+                                                        {" / "}
+                                                        {ride.total_seats}
+                                                        {" available"}
+                                    </span>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div className="col-md-6">
+
+                                            <div className="d-flex align-items-center gap-2">
+
+                                                <Banknote
+                                                    size={17}
+                                                    className="text-warning flex-shrink-0"
+                                                />
+
+                                                <div>
+                                                    <small className="text-muted d-block">
+                                                        Price
+                                                    </small>
+
+                                                    <span className="fw-semibold">
+                                        Rs.{" "}
+                                                        {ride.fee_per_seat}
+                                                        {" / seat"}
+                                    </span>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {/* VEHICLE */}
+
+                                    {ride.vehicles && (
+
+                                        <div
+                                            className="rounded-3 mt-4 px-3 py-3"
+                                            style={{
+                                                backgroundColor:
+                                                    "rgba(250, 204, 21, 0.08)",
+                                                border:
+                                                    "1px solid rgba(250, 204, 21, 0.15)",
+                                            }}
+                                        >
+
+                                            <div className="d-flex align-items-center gap-2">
+
+                                                <Car
+                                                    size={18}
+                                                    className="text-warning flex-shrink-0"
+                                                />
 
                                                 <div>
 
                                                     <small className="text-muted d-block">
-                                                        Destination
+                                                        Vehicle
                                                     </small>
 
-                                                    <strong>
-                                                        {
-                                                            ride.destination
-                                                        }
-                                                    </strong>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-
-                                        {/* DETAILS */}
-
-                                        <div className="row g-3 small">
-
-
-                                            <div className="col-md-6">
-
-                                                <div className="d-flex align-items-center gap-2">
-
-                                                    <CalendarDays
-                                                        size={17}
-                                                        className="text-warning"
-                                                    />
-
-                                                    <span>
-
-                                                        {formatDate(
-                                                            ride.ride_date
-                                                        )}
-
-                                                    </span>
-
-                                                </div>
-
-                                            </div>
-
-
-                                            <div className="col-md-6">
-
-                                                <div className="d-flex align-items-center gap-2">
-
-                                                    <Clock
-                                                        size={17}
-                                                        className="text-warning"
-                                                    />
-
-                                                    <span>
-
-                                                        {
-                                                            ride.departure_time
-                                                        }
-
-                                                    </span>
-
-                                                </div>
-
-                                            </div>
-
-
-                                            <div className="col-md-6">
-
-                                                <div className="d-flex align-items-center gap-2">
-
-                                                    <Users
-                                                        size={17}
-                                                        className="text-warning"
-                                                    />
-
-                                                    <span>
-
-                                                        {
-                                                            ride.available_seats
-                                                        }
-
-                                                        {" / "}
-
-                                                        {
-                                                            ride.total_seats
-                                                        }
-
-                                                        {" seats available"}
-
-                                                    </span>
-
-                                                </div>
-
-                                            </div>
-
-
-                                            <div className="col-md-6">
-
-                                                <div className="d-flex align-items-center gap-2">
-
-                                                    <Banknote
-                                                        size={17}
-                                                        className="text-warning"
-                                                    />
-
-                                                    <span>
-
-                                                        Rs.{" "}
-
-                                                        {
-                                                            ride.fee_per_seat
-                                                        }
-
-                                                        {" / seat"}
-
-                                                    </span>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-
-                                        {/* VEHICLE */}
-
-                                        {ride.vehicles && (
-
-                                            <div className="border-top mt-4 pt-3">
-
-                                                <div className="d-flex align-items-center gap-2">
-
-                                                    <Car
-                                                        size={18}
-                                                        className="text-warning"
-                                                    />
-
                                                     <span className="fw-semibold">
-
-                                                        {
-                                                            ride.vehicles.brand
-                                                        }
-
+                                        {ride.vehicles.brand}
                                                         {" "}
-
-                                                        {
-                                                            ride.vehicles.model
-                                                        }
-
+                                                        {ride.vehicles.model}
                                                         {" - "}
-
-                                                        {
-                                                            ride.vehicles.vehicle_number
-                                                        }
-
-                                                    </span>
+                                                        {ride.vehicles.vehicle_number}
+                                    </span>
 
                                                 </div>
 
                                             </div>
 
-                                        )}
+                                        </div>
+
+                                    )}
 
 
-                                        {/* ACTIONS */}
+                                    {/* ACTIONS */}
 
-                                        {[
-                                            "available",
-                                            "full",
-                                        ].includes(
-                                            ride.status
-                                        ) && (
+                                    {[
+                                        "available",
+                                        "full",
+                                    ].includes(ride.status) && (
 
-                                            <div className="d-flex flex-wrap gap-2 border-top mt-4 pt-3">
+                                        <div
+                                            className="d-flex flex-wrap gap-2 border-top mt-4 pt-3"
+                                        >
 
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline-dark btn-sm"
-                                                    onClick={() =>
-                                                        handleOpenEdit(ride)
-                                                    }
-                                                >
-                                                    <Pencil
-                                                        size={16}
-                                                        className="me-1"
-                                                    />
-
-                                                    Edit
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline-primary btn-sm"
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/driver/rides/${ride.id}/passengers`
-                                                        )
-                                                    }
-                                                >
-                                                    Passengers
-                                                </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm rounded-pill px-3"
+                                                style={{
+                                                    border:
+                                                        "1px solid #0f172a",
+                                                    color: "#0f172a",
+                                                }}
+                                                onClick={() =>
+                                                    handleOpenEdit(ride)
+                                                }
+                                            >
+                                                <Pencil
+                                                    size={15}
+                                                    className="me-1"
+                                                />
+                                                Edit
+                                            </button>
 
 
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline-danger btn-sm"
-                                                    disabled={
-                                                        actionLoading ===
-                                                        ride.id
-                                                    }
-                                                    onClick={() =>
-                                                        handleCancelRide(
-                                                            ride.id
-                                                        )
-                                                    }
-                                                >
-
-                                                    <XCircle
-                                                        size={16}
-                                                        className="me-1"
-                                                    />
-
-                                                    Cancel
-
-                                                </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm rounded-pill px-3"
+                                                style={{
+                                                    border:
+                                                        "1px solid #0d6efd",
+                                                    color: "#0d6efd",
+                                                }}
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/driver/rides/${ride.id}/passengers`
+                                                    )
+                                                }
+                                            >
+                                                Passengers
+                                            </button>
 
 
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline-success btn-sm"
-                                                    disabled={
-                                                        actionLoading ===
-                                                        ride.id
-                                                    }
-                                                    onClick={() =>
-                                                        handleCompleteRide(
-                                                            ride.id
-                                                        )
-                                                    }
-                                                >
-
-                                                    <CheckCircle2
-                                                        size={16}
-                                                        className="me-1"
-                                                    />
-
-                                                    Complete
-
-                                                </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                                disabled={
+                                                    actionLoading === ride.id
+                                                }
+                                                onClick={() =>
+                                                    handleCancelRide(ride.id)
+                                                }
+                                            >
+                                                <XCircle
+                                                    size={15}
+                                                    className="me-1"
+                                                />
+                                                Cancel
+                                            </button>
 
 
-                                                {actionLoading ===
-                                                    ride.id && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-success btn-sm rounded-pill px-3"
+                                                disabled={
+                                                    actionLoading === ride.id
+                                                }
+                                                onClick={() =>
+                                                    handleCompleteRide(ride.id)
+                                                }
+                                            >
+                                                <CheckCircle2
+                                                    size={15}
+                                                    className="me-1"
+                                                />
+                                                Complete
+                                            </button>
 
-                                                        <Loader2
-                                                            size={18}
-                                                        />
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm rounded-pill px-3 bg-primary text-white"
+                                                style={{
+                                                    border: "1px solid #0d6efd",
+                                                    color: "#0d6efd",
+                                                }}
+                                                onClick={() =>
+                                                    navigate(`/driver/rides/${ride.id}/chat`)
+                                                }
+                                            >
+                                                <MessageCircle
+                                                    size={15}
+                                                    className="me-1"
+                                                />
+                                                Chat
+                                            </button>
 
-                                                    )}
 
-                                            </div>
+                                            {actionLoading === ride.id && (
+                                                <Loader2
+                                                    size={18}
+                                                    className="align-self-center"
+                                                />
+                                            )}
 
-                                        )}
+                                        </div>
 
-                                    </div>
+                                    )}
 
                                 </div>
 
                             </div>
 
-                        )
-                    )}
+                        </div>
+
+                    ))}
 
                 </div>
 

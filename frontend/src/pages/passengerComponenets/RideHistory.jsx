@@ -131,28 +131,42 @@ const RideHistory = () => {
                 <div
                     className="rounded-4 p-4 mb-4 position-relative overflow-hidden"
                     style={{
-                        backgroundColor: "#171717",
+                        background:
+                            "linear-gradient(135deg, #0f172a 0%, #172554 100%)",
+                        boxShadow:
+                            "0 6px 20px rgba(8, 20, 45, 0.12)",
+                        border:
+                            "1px solid rgba(255,255,255,0.06)",
                     }}
                 >
+                    {/* DECORATIVE CIRCLE */}
 
                     <div
                         style={{
                             position: "absolute",
-                            width: "150px",
-                            height: "150px",
+                            width: "120px",
+                            height: "120px",
                             borderRadius: "50%",
-                            backgroundColor: "#ffc107",
-                            right: "-45px",
-                            top: "-75px",
+                            background:
+                                "rgba(250, 204, 21, 0.10)",
+                            right: "-35px",
+                            top: "-55px",
+                            border:
+                                "1px solid rgba(250, 204, 21, 0.12)",
                         }}
                     />
 
+                    {/* CONTENT */}
 
                     <div className="position-relative">
 
-                        <div className="d-flex align-items-center gap-2 text-warning mb-2">
-
-                            <History size={18} />
+                        <div
+                            className="d-flex align-items-center gap-2 mb-2"
+                            style={{
+                                color: "#facc15",
+                            }}
+                        >
+                            <History size={17} />
 
                             <small
                                 className="fw-bold"
@@ -162,21 +176,28 @@ const RideHistory = () => {
                             >
                                 JOURNEY ARCHIVE
                             </small>
-
                         </div>
 
-
-                        <h2 className="text-white fw-bold mb-1">
+                        <h2
+                            className="text-white fw-bold mb-1"
+                            style={{
+                                fontSize: "1.7rem",
+                            }}
+                        >
                             Ride History
                         </h2>
 
-                        <p className="text-white-50 mb-0">
-                            Review your completed
-                            and cancelled journeys.
+                        <p
+                            className="mb-0"
+                            style={{
+                                color: "rgba(255,255,255,0.65)",
+                                fontSize: "0.9rem",
+                            }}
+                        >
+                            Review your completed and cancelled journeys.
                         </p>
 
                     </div>
-
                 </div>
 
 
@@ -195,67 +216,101 @@ const RideHistory = () => {
                     TABS
                 ========================= */}
 
-                <div className="d-flex gap-2 mb-4">
-
+                <div
+                    className="d-flex flex-wrap gap-2 mb-4 p-2 rounded-4"
+                    style={{
+                        background: "rgba(15, 23, 42, 0.04)",
+                        width: "fit-content",
+                    }}
+                >
                     <button
                         type="button"
-                        className={
-                            tab === "completed"
-                                ? "btn btn-dark px-4"
-                                : "btn btn-outline-dark px-4"
-                        }
+                        className="d-flex align-items-center gap-2 border-0"
+                        style={{
+                            padding: "9px 16px",
+                            borderRadius: "50px",
+                            background:
+                                tab === "completed"
+                                    ? "#facc15"
+                                    : "transparent",
+                            color:
+                                tab === "completed"
+                                    ? "#0f172a"
+                                    : "#475569",
+                            fontWeight: "600",
+                            boxShadow:
+                                tab === "completed"
+                                    ? "0 3px 10px rgba(250, 204, 21, 0.25)"
+                                    : "none",
+                            transition: "all 0.2s ease",
+                        }}
                         onClick={() =>
                             setTab("completed")
                         }
                     >
+                        <CheckCircle2 size={16} />
 
-                        <CheckCircle2
-                            size={16}
-                            className="me-2"
-                        />
+                        <span>Completed</span>
 
-                        Completed
-
-                        <span className="badge bg-warning text-dark ms-2">
-
-                            {
-                                history.completed.length
-                            }
-
-                        </span>
-
+                        <span
+                            className="rounded-pill px-2 py-1"
+                            style={{
+                                fontSize: "0.7rem",
+                                background:
+                                    tab === "completed"
+                                        ? "rgba(15, 23, 42, 0.12)"
+                                        : "rgba(250, 204, 21, 0.18)",
+                                color: "#0f172a",
+                            }}
+                        >
+            {history.completed.length}
+        </span>
                     </button>
 
 
                     <button
                         type="button"
-                        className={
-                            tab === "cancelled"
-                                ? "btn btn-dark px-4"
-                                : "btn btn-outline-dark px-4"
-                        }
+                        className="d-flex align-items-center gap-2 border-0"
+                        style={{
+                            padding: "9px 16px",
+                            borderRadius: "50px",
+                            background:
+                                tab === "cancelled"
+                                    ? "#facc15"
+                                    : "transparent",
+                            color:
+                                tab === "cancelled"
+                                    ? "#0f172a"
+                                    : "#475569",
+                            fontWeight: "600",
+                            boxShadow:
+                                tab === "cancelled"
+                                    ? "0 3px 10px rgba(250, 204, 21, 0.25)"
+                                    : "none",
+                            transition: "all 0.2s ease",
+                        }}
                         onClick={() =>
                             setTab("cancelled")
                         }
                     >
+                        <XCircle size={16} />
 
-                        <XCircle
-                            size={16}
-                            className="me-2"
-                        />
+                        <span>Cancelled</span>
 
-                        Cancelled
-
-                        <span className="badge bg-warning text-dark ms-2">
-
-                            {
-                                history.cancelled.length
-                            }
-
-                        </span>
-
+                        <span
+                            className="rounded-pill px-2 py-1"
+                            style={{
+                                fontSize: "0.7rem",
+                                background:
+                                    tab === "cancelled"
+                                        ? "rgba(15, 23, 42, 0.12)"
+                                        : "rgba(250, 204, 21, 0.18)",
+                                color: "#0f172a",
+                            }}
+                        >
+            {history.cancelled.length}
+        </span>
                     </button>
-
                 </div>
 
 

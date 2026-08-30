@@ -5,15 +5,19 @@ import PassengerSidebar from "../components/passenger/PassengerSidebar";
 const PassengerLayout = () => {
 
     return (
-        <div className="d-flex">
+        <div
+            style={{
+                minHeight: "100vh",
+                background: "#f8fafc",
+            }}
+        >
 
             <PassengerSidebar />
 
             <main
-                className="flex-grow-1"
                 style={{
-                    minHeight: "100vh",
-                    backgroundColor: "#f8f9fa",
+                    minWidth: 0,
+                    overflowX: "hidden",
                 }}
             >
                 <Outlet />

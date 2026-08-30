@@ -2,6 +2,8 @@ const {
     supabase,
     supabaseAdmin} = require("../config/supabase");
 
+const {createClient} = require("@supabase/supabase-js");
+
 const {
     uploadProfileImage,
     deleteProfileImage,
@@ -140,7 +142,163 @@ const loginUser = async ({ email, password }) => {
     };
 };
 
+const forgotPassword =
+    async (email) => {
+
+        const normalizedEmail =
+            email.trim().toLowerCase();
+
+        const {
+            data,
+            error,
+        } =
+            await supabase.auth
+                .resetPasswordForEmail(
+                    normalizedEmail,
+                    {
+                        redirectTo:
+                            `${process.env.CLIENT_URL}/update-password`,
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    };
+
+const resetPassword = async (
+    accessToken,
+    refreshToken,
+    newPassword
+) => {
+
+    if (!accessToken || !refreshToken) {
+
+        const error =
+            new Error(
+                "Password reset session is missing or invalid"
+            );
+
+        error.statusCode = 401;
+
+        throw error;
+    }
+
+
+    if (!newPassword) {
+
+        const error =
+            new Error(
+                "New password is required"
+            );
+
+        error.statusCode = 400;
+
+        throw error;
+    }
+
+
+    if (newPassword.length < 6) {
+
+        const error =
+            new Error(
+                "Password must be at least 6 characters long"
+            );
+
+        error.statusCode = 400;
+
+        throw error;
+    }
+
+
+    // Create a temporary Supabase client
+    // for the recovery session.
+
+    const recoveryClient =
+        createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_ANON_KEY,
+            {
+                auth: {
+                    persistSession:
+                        false,
+
+                    autoRefreshToken:
+                        false,
+                },
+            }
+        );
+
+
+    // Establish the recovery session.
+
+    const {
+        data: sessionData,
+        error: sessionError,
+    } =
+        await recoveryClient.auth
+            .setSession({
+                access_token:
+                accessToken,
+
+                refresh_token:
+                refreshToken,
+            });
+
+
+    if (
+        sessionError ||
+        !sessionData?.session
+    ) {
+
+        console.error(
+            "Recovery session error:",
+            sessionError
+        );
+
+        const error =
+            new Error(
+                "Invalid or expired password reset link"
+            );
+
+        error.statusCode = 401;
+
+        throw error;
+    }
+
+
+    // Now the client has a valid
+    // authenticated recovery session.
+
+    const {
+        error: updateError,
+    } =
+        await recoveryClient.auth
+            .updateUser({
+                password:
+                newPassword,
+            });
+
+
+    if (updateError) {
+
+        console.error(
+            "Password update error:",
+            updateError
+        );
+
+        throw updateError;
+    }
+
+
+    return true;
+};
+
 module.exports = {
     registerUser,
     loginUser,
+    forgotPassword,
+resetPassword,
 };

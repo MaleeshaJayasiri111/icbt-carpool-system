@@ -30,6 +30,10 @@ import RideChat from "./pages/shared/RideChat";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import Profile from "./pages/shared/Profile";
+import ForgotPassword
+  from "./pages/auth/ForgotPassword";
+import UpdatePassword from "./pages/auth/UpdatePassword";
 
 function App() {
   return (
@@ -67,6 +71,18 @@ function App() {
                 path="/register"
                 element={<Register />}
             />
+            <Route
+                path="/forgot-password"
+                element={
+                  <ForgotPassword />
+                }
+            />
+            <Route
+                path="/update-password"
+                element={
+                  <UpdatePassword />
+                }
+            />
 
             {/* ADMIN PROTECTED AREA */}
             <Route element={<AdminProtectedRoute />}>
@@ -95,7 +111,7 @@ function App() {
                 element={<Vehicles />}
             />
             <Route
-                path="rides/create"
+                path="ride/create"
                 element={<CreateRide />}
             />
             <Route
@@ -115,6 +131,12 @@ function App() {
             <Route
                 path="rides/:rideId/chat"
                 element={<RideChat />}
+            />
+            <Route
+                path="profile"
+                element={
+                  <Profile />
+                }
             />
 
           </Route>
@@ -142,6 +164,12 @@ function App() {
             <Route
                 path="rides/:rideId/chat"
                 element={<RideChat />}
+            />
+            <Route
+                path="profile"
+                element={
+                  <Profile />
+                }
             />
           </Route>
 

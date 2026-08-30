@@ -30,12 +30,6 @@ import {
     requestRide,
 } from "../../services/bookingService";
 
-
-// =====================================================
-// MAP CONTROLLER
-// Automatically moves map when locations are selected
-// =====================================================
-
 const MapController = ({
                            start,
                            destination,
@@ -103,17 +97,11 @@ const MapController = ({
     return null;
 };
 
-
-// =====================================================
 // MAIN PAGE
-// =====================================================
 
 const FindRides = () => {
 
-    // -----------------------------
     // Search input text
-    // -----------------------------
-
     const [
         startSearch,
         setStartSearch,
@@ -124,10 +112,7 @@ const FindRides = () => {
         setDestinationSearch,
     ] = useState("");
 
-
-    // -----------------------------
     // Location suggestion results
-    // -----------------------------
 
     const [
         startResults,
@@ -140,19 +125,14 @@ const FindRides = () => {
     ] = useState([]);
 
 
-    // -----------------------------
     // Location search loading
-    // -----------------------------
 
     const [
         searchingLocation,
         setSearchingLocation,
     ] = useState("");
 
-
-    // -----------------------------
     // Actual data sent to backend
-    // -----------------------------
 
     const [
         formData,
@@ -169,10 +149,7 @@ const FindRides = () => {
         preferredTime: "",
     });
 
-
-    // -----------------------------
     // Matching rides
-    // -----------------------------
 
     const [
         rides,
@@ -184,10 +161,7 @@ const FindRides = () => {
         setSearched,
     ] = useState(false);
 
-
-    // -----------------------------
     // Loading / messages
-    // -----------------------------
 
     const [
         loading,
@@ -209,10 +183,7 @@ const FindRides = () => {
         setSuccess,
     ] = useState("");
 
-
-    // =====================================================
     // SEARCH LOCATION USING OPENSTREETMAP
-    // =====================================================
 
     const searchLocation = async (type) => {
 
@@ -299,10 +270,7 @@ const FindRides = () => {
         }
     };
 
-
-    // =====================================================
     // SELECT LOCATION FROM SUGGESTIONS
-    // =====================================================
 
     const selectLocation = (
         type,
@@ -948,18 +916,30 @@ const FindRides = () => {
 
                     <div className="mt-4">
 
-                        <h6 className="fw-semibold mb-3">
-                            Route Preview
-                        </h6>
+                        <div className="d-flex align-items-center justify-content-between mb-2">
 
+                            <h6
+                                className="fw-semibold mb-0"
+                                style={{ color: "#0f172a" }}
+                            >
+                                Route Preview
+                            </h6>
+
+                            <small className="text-muted">
+                                Start → Destination
+                            </small>
+
+                        </div>
 
                         <div
                             style={{
-                                height: "380px",
-                                borderRadius:
-                                    "12px",
-                                overflow:
-                                    "hidden",
+                                height: "230px",
+                                borderRadius: "16px",
+                                overflow: "hidden",
+                                boxShadow:
+                                    "0 5px 18px rgba(8, 20, 45, 0.10)",
+                                border:
+                                    "1px solid rgba(8, 20, 45, 0.08)",
                             }}
                         >
 
@@ -970,11 +950,8 @@ const FindRides = () => {
                                 ]}
                                 zoom={8}
                                 style={{
-                                    height:
-                                        "100%",
-
-                                    width:
-                                        "100%",
+                                    height: "100%",
+                                    width: "100%",
                                 }}
                             >
 
@@ -983,27 +960,22 @@ const FindRides = () => {
                                     attribution="&copy; OpenStreetMap contributors"
                                 />
 
-
                                 <MapController
                                     start={
-                                        formData.startLatitude !==
-                                        null
+                                        formData.startLatitude !== null
                                             ? {
                                                 latitude:
                                                 formData.startLatitude,
-
                                                 longitude:
                                                 formData.startLongitude,
                                             }
                                             : null
                                     }
                                     destination={
-                                        formData.destinationLatitude !==
-                                        null
+                                        formData.destinationLatitude !== null
                                             ? {
                                                 latitude:
                                                 formData.destinationLatitude,
-
                                                 longitude:
                                                 formData.destinationLongitude,
                                             }
@@ -1011,35 +983,27 @@ const FindRides = () => {
                                     }
                                 />
 
-
                                 {/* START MARKER */}
 
-                                {formData.startLatitude !==
-                                    null && (
-
-                                        <Marker
-                                            position={[
-                                                formData.startLatitude,
-                                                formData.startLongitude,
-                                            ]}
-                                        />
-
-                                    )}
-
+                                {formData.startLatitude !== null && (
+                                    <Marker
+                                        position={[
+                                            formData.startLatitude,
+                                            formData.startLongitude,
+                                        ]}
+                                    />
+                                )}
 
                                 {/* DESTINATION MARKER */}
 
-                                {formData.destinationLatitude !==
-                                    null && (
-
-                                        <Marker
-                                            position={[
-                                                formData.destinationLatitude,
-                                                formData.destinationLongitude,
-                                            ]}
-                                        />
-
-                                    )}
+                                {formData.destinationLatitude !== null && (
+                                    <Marker
+                                        position={[
+                                            formData.destinationLatitude,
+                                            formData.destinationLongitude,
+                                        ]}
+                                    />
+                                )}
 
                             </MapContainer>
 

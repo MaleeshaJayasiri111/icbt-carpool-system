@@ -81,10 +81,21 @@ const Login = () => {
                     <div className="mb-4">
                         <div className="d-flex justify-content-between align-items-center mb-1">
                             <label className="form-label fw-semibold mb-0 text-dark">Password</label>
-                            <Link to="/forgot-password" className="text-primary small text-decoration-none fw-bold">Forgot Password?</Link>
+
                         </div>
                         <input type="password" className="form-control" placeholder="••••••••" required onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                        <Link
+                            to="/forgot-password"
+                            className="text-decoration-none small fw-semibold"
+                            style={{
+                                color: "red",
+                            }}
+                        >
+                            Forgot password?
+                        </Link>
+
                     </div>
+
 
                     <button type="submit" className="btn btn-yb-yellow w-100 mb-4 py-2 fs-6">
                         Login

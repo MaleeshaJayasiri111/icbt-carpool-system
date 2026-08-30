@@ -5,17 +5,16 @@ import DriverSidebar from "../components/driver/DriverSidebar";
 const DriverLayout = () => {
     return (
         <div
-            className="d-flex bg-light"
             style={{
                 minHeight: "100vh",
+                background: "#f8fafc",
             }}
         >
-            {/* SIDEBAR */}
+            {/* TOP NAVBAR */}
             <DriverSidebar />
 
             {/* PAGE CONTENT */}
             <main
-                className="flex-grow-1"
                 style={{
                     minWidth: 0,
                     overflowX: "hidden",
