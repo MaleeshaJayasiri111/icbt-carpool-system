@@ -1,6 +1,8 @@
 const rideService =
     require("../services/ride.service");
 
+const {calculateRideFare} = require("../services/fare.service");
+
 
 const createRide = async (req, res) => {
     try {
@@ -340,6 +342,84 @@ const getRidePassengers= async (req,res)=>{
         })
     }
 }
+
+//calculate suggested fare
+const calculateFare = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const {
+            vehicleId,
+            startLatitude,
+            startLongitude,
+            destinationLatitude,
+            destinationLongitude,
+        } = req.body;
+
+
+        if (
+            !vehicleId ||
+            startLatitude === undefined ||
+            startLongitude === undefined ||
+            destinationLatitude === undefined ||
+            destinationLongitude === undefined
+        ) {
+
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    message:
+                        "Vehicle and locations are required",
+                });
+        }
+
+
+        const fare =
+            await calculateRideFare({
+                driverId:
+                req.user.id,
+
+                vehicleId,
+
+                startLatitude,
+                startLongitude,
+                destinationLatitude,
+                destinationLongitude,
+            });
+
+
+        return res
+            .status(200)
+            .json({
+                success: true,
+                data: fare,
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Calculate fare error:",
+            error
+        );
+
+
+        return res
+            .status(
+                error.statusCode || 500
+            )
+            .json({
+                success: false,
+                message:
+                    error.message ||
+                    "Unable to calculate fare",
+            });
+    }
+};
+
 module.exports = {
     createRide,
     getMyRides,
@@ -350,5 +430,6 @@ module.exports = {
 
     getAvailableRides,
     searchMatchingRides,
-    getRidePassengers
+    getRidePassengers,
+    calculateFare
 };

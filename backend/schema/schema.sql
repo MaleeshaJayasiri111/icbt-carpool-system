@@ -225,3 +225,14 @@ alter table public.payments
 
 alter table public.payments
     add column if not exists refunded_at timestamptz;
+
+create index if not exists
+    idx_ride_messages_ride_id
+    on public.ride_messages(ride_id);
+
+create index if not exists
+    idx_ride_messages_created_at
+    on public.ride_messages(
+    ride_id,
+    created_at
+    );

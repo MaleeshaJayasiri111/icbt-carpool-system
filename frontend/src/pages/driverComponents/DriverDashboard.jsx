@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Car, PlusCircle, MapPin, ClipboardList,
-    CheckCircle2, MessageCircle, ArrowRight,
+    ArrowRight,
 } from "lucide-react";
 
 const DARK_CARD = { backgroundColor: '#0d1b5e', border: '2px solid rgba(59,130,246,0.5)' };
@@ -38,11 +38,10 @@ const DriverDashboard = () => {
 
     const dashboardItems = [
         { title: "Manage Vehicles", desc: "Register your vehicles and manage the vehicles you use for rides.", icon: Car, btn: "Manage Vehicles", route: "/driver/vehicles" },
-        { title: "Post a Ride", desc: "Create a new ride by selecting your vehicle, locations and ride details.", icon: PlusCircle, btn: "Post New Ride", route: "/driver/post-ride", primary: true },
-        { title: "My Rides", desc: "View all rides you have posted and check their current status.", icon: MapPin, btn: "View My Rides", route: "/driver/my-rides" },
-        { title: "Ride Requests", desc: "View passengers who have requested to join your rides.", icon: ClipboardList, btn: "View Requests", route: "/driver/ride-requests" },
-        { title: "Approved Rides", desc: "View confirmed rides and passengers who have joined your rides.", icon: CheckCircle2, btn: "View Approved", route: "/driver/approved-rides" },
-        { title: "Ride Chats", desc: "Communicate with passengers for your confirmed rides.", icon: MessageCircle, btn: "Open Chats", route: "/driver/approved-rides" },
+        { title: "Post a Ride", desc: "Create a new ride by selecting your vehicle, locations and ride details.", icon: PlusCircle, btn: "Post New Ride", route: "/driver/ride/create", primary: true },
+        { title: "My Rides", desc: "View all rides you have posted and check their current status.", icon: MapPin, btn: "View My Rides", route: "/driver/rides" },
+        { title: "Ride Requests", desc: "View passengers who have requested to join your rides.", icon: ClipboardList, btn: "View Requests", route: "/driver/requests" },
+
     ];
 
     const steps = [
@@ -82,22 +81,47 @@ const DriverDashboard = () => {
 
             <div className="px-2 px-md-4 py-3">
                 {/* Dashboard Nav Cards */}
-                <div className="row g-4 mb-4">
-                    {dashboardItems.map(({ title, desc, icon: Icon, btn, route, primary }) => (
-                        <div key={title} className="col-md-6 col-lg-4">
-                            <div className="card h-100 p-4 rounded-4 d-flex flex-column dark-card-hover" style={DARK_CARD}>
-                                <div className="mb-4 bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center"
-                                    style={{ width: '60px', height: '60px' }}>
-                                    <Icon size={28} />
+                <div className="d-flex flex-column gap-3 mb-4">
+                    {dashboardItems.map(({ title, desc, icon: Icon, btn, route }) => (
+                        <div key={title}>
+                            <div
+                                className="card border-0 rounded-4 p-5 dark-card-hover"
+                                style={DARK_CARD}
+                            >
+                                <div className="d-flex align-items-center">
+
+                                    {/* Icon */}
+                                    <div
+                                        className="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3"
+                                        style={{ width: '52px', height: '52px' }}
+                                    >
+                                        <Icon size={24} />
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="flex-grow-1">
+                                        <h5 className="fw-bold text-white mb-1">
+                                            {title}
+                                        </h5>
+
+                                        <p
+                                            className="text-white-50 small mb-0"
+                                            style={{ lineHeight: '1.4' }}
+                                        >
+                                            {desc}
+                                        </p>
+                                    </div>
+
+                                    {/* Button */}
+                                    <button
+                                        className="btn btn-yb-yellow fw-bold d-flex align-items-center gap-2 ms-3 flex-shrink-0"
+                                        onClick={() => navigate(route)}
+                                    >
+                                        {btn}
+                                        <ArrowRight size={16} />
+                                    </button>
+
                                 </div>
-                                <h5 className="fw-bold text-white mb-2">{title}</h5>
-                                <p className="text-white-50 small flex-grow-1 mb-4" style={{ lineHeight: '1.6' }}>{desc}</p>
-                                <button
-                                    className={`btn fw-bold d-flex align-items-center gap-2 ${primary ? 'btn-yb-yellow' : 'btn-outline-light'}`}
-                                    onClick={() => navigate(route)}
-                                >
-                                    {btn} <ArrowRight size={16} />
-                                </button>
                             </div>
                         </div>
                     ))}

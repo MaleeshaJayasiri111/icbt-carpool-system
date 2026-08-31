@@ -26,9 +26,14 @@ import PassengerDashboard from "./pages/passengerComponenets/PassengerDashboard"
 import FindRides from "./pages/passengerComponenets/FindRides";
 import PassengerMyRides from "./pages/passengerComponenets/PassengerMyRides";
 import RideHistory from "./pages/passengerComponenets/RideHistory";
+import RideChat from "./pages/shared/RideChat";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import Profile from "./pages/shared/Profile";
+import ForgotPassword
+  from "./pages/auth/ForgotPassword";
+import UpdatePassword from "./pages/auth/UpdatePassword";
 
 function App() {
   return (
@@ -66,6 +71,18 @@ function App() {
                 path="/register"
                 element={<Register />}
             />
+            <Route
+                path="/forgot-password"
+                element={
+                  <ForgotPassword />
+                }
+            />
+            <Route
+                path="/update-password"
+                element={
+                  <UpdatePassword />
+                }
+            />
 
             {/* ADMIN PROTECTED AREA */}
             <Route element={<AdminProtectedRoute />}>
@@ -94,7 +111,7 @@ function App() {
                 element={<Vehicles />}
             />
             <Route
-                path="rides/create"
+                path="ride/create"
                 element={<CreateRide />}
             />
             <Route
@@ -110,6 +127,16 @@ function App() {
             <Route
                 path="requests"
                 element={<JoinRequests />}
+            />
+            <Route
+                path="rides/:rideId/chat"
+                element={<RideChat />}
+            />
+            <Route
+                path="profile"
+                element={
+                  <Profile />
+                }
             />
 
           </Route>
@@ -134,7 +161,18 @@ function App() {
                 path="history"
                 element={<RideHistory />}
             />
+            <Route
+                path="rides/:rideId/chat"
+                element={<RideChat />}
+            />
+            <Route
+                path="profile"
+                element={
+                  <Profile />
+                }
+            />
           </Route>
+
 
         </Routes>
       </BrowserRouter>

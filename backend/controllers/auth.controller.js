@@ -108,8 +108,158 @@ const getCurrentUser = async (req, res) => {
     });
 };
 
+// FORGOT PASSWORD
+const forgotPassword = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const { email } =
+            req.body;
+
+
+        if (!email) {
+
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    message:
+                        "Email is required",
+                });
+
+        }
+
+
+        await authService
+            .forgotPassword(
+                email
+            );
+
+
+        return res
+            .status(200)
+            .json({
+                success: true,
+
+                message:
+                    "If an account exists for this email, a password reset link has been sent.",
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Forgot password error:",
+            error
+        );
+
+
+        return res
+            .status(
+                error.statusCode ||
+                500
+            )
+            .json({
+                success: false,
+
+                message:
+                    error.message ||
+                    "Unable to process password reset request",
+            });
+    }
+};
+
+// RESET PASSWORD
+
+const resetPassword = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const {
+            accessToken,
+            refreshToken,
+            newPassword,
+
+        } = req.body;
+
+
+        if (
+            !accessToken ||
+            !newPassword
+        ) {
+
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    message:
+                        "Access token and new password are required",
+                });
+        }
+
+
+        await authService
+            .resetPassword(
+                accessToken,
+                refreshToken,
+                newPassword
+            );
+
+        if (
+            !accessToken ||
+            !refreshToken ||
+            !newPassword
+        ) {
+
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    message:
+                        "Password reset session and new password are required",
+                });
+        }
+
+
+        return res
+            .status(200)
+            .json({
+                success: true,
+                message:
+                    "Password updated successfully",
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Reset password error:",
+            error
+        );
+
+
+        return res
+            .status(
+                error.statusCode ||
+                500
+            )
+            .json({
+                success: false,
+                message:
+                    error.message ||
+                    "Unable to reset password",
+            });
+    }
+};
+
 module.exports = {
     register,
     login,
     getCurrentUser,
+    forgotPassword,
+    resetPassword,
 }

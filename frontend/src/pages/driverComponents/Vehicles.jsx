@@ -689,109 +689,143 @@ const Vehicles = () => {
                     {vehicles.map((vehicle) => (
 
                         <div
-                            className="col-md-6 col-lg-4"
+                            className="col-md-6 col-xl-4"
                             key={vehicle.id}
                         >
 
-                            <div className="card border-0 shadow-sm h-100">
+                            <div
+                                className="card border-0 h-100 rounded-4"
+                                style={{
+                                    background: "rgba(8, 20, 45, 0.95)",
+                                    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
+                                    overflow: "hidden",
+                                }}
+                            >
 
                                 <div className="card-body p-4">
 
-                                    <div className="d-flex justify-content-between mb-3">
+                                    {/* TOP SECTION */}
 
-                                        <div className="bg-warning bg-opacity-10 rounded-circle p-3">
+                                    <div className="d-flex align-items-start justify-content-between mb-3">
 
-                                            <Car
-                                                size={25}
-                                                className="text-warning"
-                                            />
+                                        <div className="d-flex align-items-center gap-3">
+
+                                            <div
+                                                className="rounded-4 d-flex align-items-center justify-content-center"
+                                                style={{
+                                                    width: "52px",
+                                                    height: "52px",
+                                                    backgroundColor: "rgba(250, 204, 21, 0.12)",
+                                                }}
+                                            >
+                                                <Car
+                                                    size={25}
+                                                    className="text-warning"
+                                                />
+                                            </div>
+
+                                            <div>
+
+                                                <h5 className="fw-bold text-white mb-1">
+                                                    {vehicle.brand} {vehicle.model}
+                                                </h5>
+
+                                                <span className="text-white-50 small">
+                                    {vehicle.vehicle_number}
+                                </span>
+
+                                            </div>
 
                                         </div>
 
 
+                                        {/* STATUS */}
+
                                         <span
-                                            className={
+                                            className={`badge rounded-pill px-3 py-2 ${
                                                 vehicle.is_active
-                                                    ? "badge bg-success"
-                                                    : "badge bg-secondary"
-                                            }
+                                                    ? "bg-success bg-opacity-75"
+                                                    : "bg-secondary"
+                                            }`}
                                         >
-
-                                            {vehicle.is_active
-                                                ? "Active"
-                                                : "Inactive"}
-
-                                        </span>
+                            {vehicle.is_active
+                                ? "Active"
+                                : "Inactive"}
+                        </span>
 
                                     </div>
 
 
-                                    <h5 className="fw-bold">
+                                    {/* DIVIDER */}
 
-                                        {vehicle.brand}{" "}
-                                        {vehicle.model}
-
-                                    </h5>
-
-
-                                    <p className="text-muted fw-semibold">
-
-                                        {vehicle.vehicle_number}
-
-                                    </p>
+                                    <div
+                                        className="my-3"
+                                        style={{
+                                            borderTop:
+                                                "1px solid rgba(255,255,255,0.1)",
+                                        }}
+                                    />
 
 
-                                    <hr />
+                                    {/* VEHICLE DETAILS */}
+
+                                    <div className="row g-3">
+
+                                        <div className="col-4">
+
+                                            <div className="text-white-50 small mb-1">
+                                                Type
+                                            </div>
+
+                                            <div className="text-white fw-semibold small">
+                                                {vehicle.vehicle_type}
+                                            </div>
+
+                                        </div>
 
 
-                                    <div className="small">
+                                        <div className="col-4">
 
-                                        <p>
-                                            <strong>
-                                                Type:
-                                            </strong>{" "}
+                                            <div className="text-white-50 small mb-1">
+                                                Color
+                                            </div>
 
-                                            {vehicle.vehicle_type}
-                                        </p>
+                                            <div className="text-white fw-semibold small">
+                                                {vehicle.color || "-"}
+                                            </div>
 
-
-                                        <p>
-                                            <strong>
-                                                Color:
-                                            </strong>{" "}
-
-                                            {vehicle.color || "-"}
-                                        </p>
+                                        </div>
 
 
-                                        <p>
-                                            <strong>
-                                                Seat Capacity:
-                                            </strong>{" "}
+                                        <div className="col-4">
 
-                                            {vehicle.seat_capacity}
-                                        </p>
+                                            <div className="text-white-50 small mb-1">
+                                                Seats
+                                            </div>
+
+                                            <div className="text-white fw-semibold small">
+                                                {vehicle.seat_capacity}
+                                            </div>
+
+                                        </div>
 
                                     </div>
 
+
+                                    {/* ACTIONS */}
 
                                     {vehicle.is_active && (
 
-                                        <div className="d-flex gap-2 mt-3">
+                                        <div className="d-flex gap-2 mt-4">
 
                                             <button
-                                                className="btn btn-outline-dark btn-sm flex-grow-1"
+                                                className="btn btn-outline-light btn-sm rounded-3 flex-grow-1 d-flex align-items-center justify-content-center gap-1"
                                                 onClick={() =>
-                                                    openEditForm(
-                                                        vehicle
-                                                    )
+                                                    openEditForm(vehicle)
                                                 }
                                             >
 
-                                                <Pencil
-                                                    size={15}
-                                                    className="me-1"
-                                                />
+                                                <Pencil size={15} />
 
                                                 Edit
 
@@ -799,7 +833,7 @@ const Vehicles = () => {
 
 
                                             <button
-                                                className="btn btn-outline-danger btn-sm flex-grow-1"
+                                                className="btn btn-outline-danger btn-sm rounded-3 flex-grow-1 d-flex align-items-center justify-content-center gap-1"
                                                 onClick={() =>
                                                     handleDeactivate(
                                                         vehicle.id
@@ -807,10 +841,7 @@ const Vehicles = () => {
                                                 }
                                             >
 
-                                                <Trash2
-                                                    size={15}
-                                                    className="me-1"
-                                                />
+                                                <Trash2 size={15} />
 
                                                 Deactivate
 

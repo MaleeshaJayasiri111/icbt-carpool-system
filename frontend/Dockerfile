@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+ENV CI=false
+
 RUN npm run build
 
 EXPOSE 3000

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Search, MapPin, Clock } from 'lucide-react';
+import {Link} from "react-router-dom";
 
 const Home = () => {
     return (

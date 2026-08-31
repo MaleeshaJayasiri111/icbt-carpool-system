@@ -9,6 +9,8 @@ const adminRoutes=require("./routes/admin.route");
 const vehicleRoutes=require("./routes/vehicle.route");
 const rideRoutes=require("./routes/ride.routes");
 const bookingRoutes=require("./routes/booking.routes");
+const messagesRoutes=require("./routes/message.routes");
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -38,6 +40,10 @@ app.use("/api/admin",adminRoutes);
 app.use("/api/vehicle",vehicleRoutes);
 app.use("/api/ride",rideRoutes);
 app.use("/api/bookings",bookingRoutes);
+app.use(
+    "/api/messages",
+    messagesRoutes
+);
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,

@@ -252,6 +252,37 @@ const cancelBookingByRide = async (rideId)=>{
     return data || [];
 }
 
+const findConfirmedBookingByRideAndPassenger =
+    async (
+        rideId,
+        passengerId
+    ) => {
+
+        const { data, error } =
+            await supabaseAdmin
+                .from("ride_bookings")
+                .select("*")
+                .eq(
+                    "ride_id",
+                    rideId
+                )
+                .eq(
+                    "passenger_id",
+                    passengerId
+                )
+                .eq(
+                    "status",
+                    "confirmed"
+                )
+                .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    };
+
 module.exports = {
     createBooking,
     findBookingById,
@@ -263,4 +294,5 @@ module.exports = {
 
     findActiveBookingsByRide,
     cancelBookingByRide,
+    findConfirmedBookingByRideAndPassenger,
 };

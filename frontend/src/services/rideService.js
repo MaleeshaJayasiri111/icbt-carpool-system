@@ -64,3 +64,15 @@ export const searchRides = async (searchData) => {
 
     return response.data;
 };
+
+export const calculateRideFare =
+    async (fareData) => {
+
+        const response =
+            await api.post(
+                "/ride/calculate-fare",
+                fareData
+            );
+
+        return response.data;
+    };
